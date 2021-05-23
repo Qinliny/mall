@@ -1,10 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{extend name="common/childPublic"}
+
+{block name="title"}商品列表{/block}
+
+{block name="content"}
+<span class="layui-breadcrumb">
+    <a>
+        <cite>商品管理</cite>
+    </a>
+    <a>
+        <cite>商品列表</cite>
+    </a>
+</span>
+<div class="row" style="margin-top: 15px">
+    <div class="layui-card">
+        <div class="layui-collapse">
+            <div class="layui-colla-item">
+                <h2 class="layui-colla-title">
+                    高级搜索
+                </h2>
+                <div class="layui-colla-content layui-show">
+                    <div class="layui-row layui-col-space10 demo-list">
+                        <div class="layui-col-sm4 layui-col-md4 layui-col-lg2">
+                            <!-- 填充内容 -->
+                            <div class="layui-card">
+                                1 
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4 layui-col-md4 layui-col-lg2">
+                            <div class="layui-card">
+                                2
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4 layui-col-md4 layui-col-lg2">
+                            <div class="layui-card">
+                                3
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script>
+    layui.use('element', function(){
+        var element = layui.element;
+    });
+</script>
+{/block}

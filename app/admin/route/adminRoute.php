@@ -1,10 +1,9 @@
 <?php
+use think\facade\Route;
 
+Route::get("/", "indexController/index")->middleware(app\admin\middleware\Auth::class);
 
-namespace app\admin\route;
+Route::get("/index", "indexController/home");
 
-
-class adminRoute
-{
-
-}
+// 商品管理
+Route::get("/goods", "GoodsController/goods");

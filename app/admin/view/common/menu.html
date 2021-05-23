@@ -1,10 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<!-- 侧边菜单 -->
+<div class="layui-side layui-side-menu">
+    <div class="layui-side-scroll">
+        <div class="layui-logo" lay-href="/admin/index">
+            <span>Qinly 商城后台管理系统</span>
+        </div>
+        
+        <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+            <li data-name="home" class="layui-nav-item layui-this">
+                <a href="javascript:;" lay-href="/admin/index" lay-tips="主页" lay-direction="2">
+                    <i class="layui-icon layui-icon-home"></i>
+                    <cite>主页</cite>
+                </a>
+            </li>
+            <li data-name="member" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="会员管理" lay-direction="2">
+                    <i class="layui-icon layui-icon-username"></i>
+                    <cite>会员管理</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd data-name="goods_list">
+                        <a lay-href="#">会员列表</a>
+                    </dd>
+                </dl>
+            </li>
+            <li data-name="goods" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="商品管理" lay-direction="2">
+                    <i class="layui-icon layui-icon-gift"></i>
+                    <cite>商品管理</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd data-name="goods_list">
+                        <a lay-href="/admin/goods">商品列表</a>
+                    </dd>
+                    <dd data-name="goods_category ">
+                        <a lay-href="#">商品分类</a>
+                    </dd>
+                    <dd data-name="goods_type">
+                        <a lay-href="#">商品类型</a>
+                    </dd>
+                </dl>
+            </li>
+            <li data-name="order" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="订单管理" lay-direction="2">
+                    <i class="layui-icon layui-icon-form"></i>
+                    <cite>订单管理</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd data-name="order_list">
+                        <a lay-href="#">订单列表</a>
+                    </dd>
+                    <dd data-name="order_setting ">
+                        <a lay-href="#">订单设置</a>
+                    </dd>
+                    <dd data-name="return_request">
+                        <a lay-href="#">退货申请处理</a>
+                    </dd>
+                    <dd data-name="return_reason">
+                        <a lay-href="#">退货原因设置</a>
+                    </dd>
+                </dl>
+            </li>
+            <li data-name="marketing" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="营销管理" lay-direction="2">
+                    <i class="layui-icon layui-icon-face-smile-fine"></i>
+                    <cite>营销管理</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd data-name="seconds_kill_activity">
+                        <a lay-href="#">秒杀活动列表</a>
+                    </dd>
+                    <dd data-name="discount_coupon ">
+                        <a lay-href="#">优惠券列表</a>
+                    </dd>
+                    <dd data-name="brand_recommendation">
+                        <a lay-href="#">品牌推荐</a>
+                    </dd>
+                    <dd data-name="new_products">
+                        <a lay-href="#">新品推荐</a>
+                    </dd>
+                    <dd data-name="sentiment_is_recommended">
+                        <a lay-href="#">人气推荐</a>
+                    </dd>
+                    <dd data-name="special_recommendation">
+                        <a lay-href="#">专题推荐</a>
+                    </dd>
+                    <dd data-name="advertising_recommended">
+                        <a lay-href="#">广告推荐</a>
+                    </dd>
+                </dl>
+            </li>
+            <li data-name="auth" class="layui-nav-item">
+                <a href="javascript:;" lay-tips="权限管理" lay-direction="2">
+                    <i class="layui-icon layui-icon-vercode"></i>
+                    <cite>权限管理</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd data-name="admin_list">
+                        <a lay-href="#">管理员列表</a>
+                    </dd>
+                    <dd data-name="role_list ">
+                        <a lay-href="#">角色列表</a>
+                    </dd>
+                    <dd data-name="menu_list">
+                        <a lay-href="#">菜单列表</a>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>

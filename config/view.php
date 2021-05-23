@@ -22,4 +22,8 @@ return [
     'taglib_begin'  => '{',
     // 标签库标签结束标记
     'taglib_end'    => '}',
+    // 模板引入静态参数
+    'tpl_replace_string'    =>  [
+        '__STATIC__'  =>  '/static'
+    ]
 ];

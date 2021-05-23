@@ -1,10 +1,4 @@
 <?php
+return [
 
-
-namespace app\admin\config;
-
-
-class view
-{
-
-}
+];

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\middleware;
+namespace app\admin\middleware;
 
 
 class Auth

@@ -4,7 +4,7 @@
 namespace app\admin\controller;
 
 
-class BaseController
+class BaseController extends \app\BaseController
 {
 
 }
