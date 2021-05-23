@@ -1,0 +1,61 @@
+{extend name="common/childPublic"}
+
+{block name="title"}商品分类{/block}
+
+{block name="content"}
+<span class="layui-breadcrumb">
+    <a>
+        <cite>商品管理</cite>
+    </a>
+    <a>
+        <cite>商品分类</cite>
+    </a>
+</span>
+
+<div class="row" style="margin-top: 15px">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            商品分类列表
+        </div>
+        <div class="layui-card-body">
+            <table id="list" lay-filter="list"></table>
+            <script type="text/html" id="test-table-toolbar-toolbarDemo">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-normal" id="create" lay-href="/admin/category/create" lay-event="getCheckData">添加商品</button>
+                </div>
+            </script>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script>
+    
+    layui.use(['element','table','jquery'], function(){
+        var element = layui.element, table = layui.table, $ = layui.$;
+
+        table.on('toolbar(list)', function(obj){
+            if (obj.event == 'getCheckData') {
+                top.layui.index.openTabsPage("/admin/category/create", '添加商品分类');
+            }
+        })
+
+        table.render({
+            elem: '#list'
+            ,height: 'full-100'
+            ,toolbar: '#test-table-toolbar-toolbarDemo'
+            ,url: '/demo/table/user/'
+            ,page: true
+            ,cols: [[
+                {field: 'id', title: '编号', width:80, sort: true, fixed: 'left'}
+                ,{field: 'username', title: '分类名称', width:150}
+                ,{field: 'sex', title: '级别', width:150, sort: true}
+                ,{field: 'city', title: '排序', width:150}
+                ,{field: 'sign', title: '查看下级', width: 150}
+                ,{field: 'wealths', title: '操作', width: 135, sort: true}
+            ]]
+        });
+    });
+</script>
+{/block}

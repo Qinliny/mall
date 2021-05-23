@@ -1,0 +1,96 @@
+{extend name="common/childPublic"}
+
+{block name="title"}添加商品分类{/block}
+
+{block name="content"}
+<span class="layui-breadcrumb">
+    <a>
+        <cite>商品管理</cite>
+    </a>
+    <a href="javascript:;" lay-href="/admin/category" lay-name="商品分类" id="category">
+        <cite>商品分类</cite>
+    </a>
+    <a>
+        <cite>添加商品分类</cite>
+    </a>
+</span>
+
+<div class="row" style="margin-top: 15px">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            添加商品分类
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">分类名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请输入分类名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">上级分类</label>
+                    <div class="layui-input-block">
+                        <select name="category_parent">
+                            <option value="0">无上级分类</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sort" required value="0" lay-verify="required|number|sortValue" placeholder="请输入0-100的排序值" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="save">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script>
+    layui.use(['element','layer','jquery'], function(){
+        var element = layui.element, layer = layui.layer, $ = layui.$, form = layui.form;
+        // 点击面包屑返回商品分类页面
+        $('#category').on('click', function(){
+            var targetUrl = $(this).attr('lay-href')
+            var targetName = $(this).attr('lay-name')
+            top.layui.index.openTabsPage(targetUrl, targetName);
+        });
+        
+        // 验证表单的值
+        form.verify({
+            lengths: function(value, item){
+                if (value.length > 6 || value.length < 1) {
+                    return "分类名称长度为1-6"
+                }
+            },
+            sortValue: function(value, item) {
+                if (value > 100 || value < 0) {
+                    return "排序的值必须在1-100内"
+                }
+            }
+        })
+        
+        // 提交表单
+        form.on('submit(save)', function(data){
+            var index = layer.load(1, {
+                shade: [0.3,'#000']
+            });
+            $.post('/admin/category/saveCreateData', data.field, function(resp){
+                console.log(resp)
+            }).error(function(){
+                layer.closeAll()
+                layer.msg("添加分类数据失败，服务器出现异常！", {icon: 5})
+            })
+        });
+    });
+</script>
+{/block}
