@@ -51,7 +51,7 @@
                         <button type="reset" class="layui-btn layui-btn-primary">重置</button>
                     </div>
                 </div>
-            </>
+            </div>
         </div>
     </div>
 </div>
@@ -77,7 +77,7 @@
             },
             sortValue: function(value, item) {
                 if (value > 100 || value < 0) {
-                    return "排序的值必须在1-100内"
+                    return "排序的值必须在0-100内"
                 }
             }
         })
@@ -88,7 +88,10 @@
                 shade: [0.3,'#000']
             });
             $.post('/admin/category/saveCreateData', data.field, function(resp){
-                console.log(resp)
+                layer.closeAll()
+                if (resp.code == 0) {
+                    layer.msg(resp.mesages, {icon: 1});
+                }
             }).error(function(){
                 layer.closeAll()
                 layer.msg("添加分类数据失败，服务器出现异常！", {icon: 5})

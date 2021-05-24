@@ -1,6 +1,4 @@
 <?php
-// 应用公共文件
-
 /**
  * 失败请求返回的信息
  * @param int $code
@@ -30,4 +28,12 @@ function successAjax(string $message, $data = []) {
     ];
     echo json_encode($return, true);
     die;
+}
+
+/**
+ * 返回当前时间格式  2021-05-25 01:08:55
+ * @return string   当前时间 年月日 时分秒
+ */
+function thisTime() : string {
+    return date('Y-m-d H:i:s', time());
 }

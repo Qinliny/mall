@@ -2,7 +2,6 @@
 namespace app\admin\model;
 
 use think\Exception;
-use think\Db;
 /**
  * 商品分类数据交互类
  * Class GoodsCategoryDb
@@ -11,13 +10,13 @@ use think\Db;
 class GoodsCategoryDb extends BaseDb
 {
     // 表名
-    private static $table = "qinly_goods_category";
+    private static $table = "goods_category";
 
     /**
      * 返回商品分类列表的数据
      * @return bool|\think\Collection
      */
-    public static function getGoodsCategoryList($page, $limit = 10) {
+    public static function getGoodsCategoryList(int $page, int $limit = 10) {
         try {
             $result = self::Db(self::$table)->order('id', 'desc')->paginate(['list_rows'=>$limit, 'page'=>$page]);
             return $result;
@@ -55,6 +54,42 @@ class GoodsCategoryDb extends BaseDb
 
 
     public static function getGoodsCategoryChildDataById(int $id) {
-        
+
+    }
+
+    /**
+     * 创建分类数据
+     * @param array $data
+     * @return bool
+     */
+    public static function createData(array $data) : bool {
+        try {
+            $insertData = [
+                'category_name' =>  $data['category_name'],
+                'parent_id'     =>  $data['category_parent'],
+                'sort'          =>  $data['sort'],
+                'create_time'   =>  thisTime(),
+                'update_time'   =>  thisTime()
+            ];
+            $res = self::Db(self::$table)->insert($insertData);
+            return $res > 0;
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * 根据分类名称获取分类信息
+     * @param string $categoryName  分类名称
+     * @return array|bool|\think\Model|null
+     */
+    public static function getGoodsCategoryDataByName(string $categoryName) {
+        try {
+            return self::Db(self::$table)
+                    ->where('category_name', $categoryName)
+                    ->find();
+        } catch (Exception $exception) {
+            return false;
+        }
     }
 }
