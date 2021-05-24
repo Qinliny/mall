@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 
 use app\admin\validate\GoodsCategoryValidate;
+use app\admin\model\GoodsCategoryDb;
 /**
  * 商品分类操作类
  * Class GoodsCategoryController
@@ -22,17 +23,19 @@ class GoodsCategoryController extends BaseController
      * @return \think\response\View
      */
     public function createCategory() {
-        return view('goods_category/create');
+        // 获取分类数据
+        $result = GoodsCategoryDb::getFirstGoodsCategoryList();
+        if ($result === false) {
+            abort(__LINE__, '获取分类数据失败！');
+        }
+        return view('goods_category/create', ['list'=>$result]);
     }
+
 
     public function saveCreateData() {
         $param = $this->request->post();
-        try {
-            // 验证数据
-            validate(GoodsCategoryValidate::class)->check($param);
-        } catch (ValidateException $e) {
-            
-        }
+        // 验证数据
+        validate(GoodsCategoryValidate::class)->check($param);
         // 判断分类是否已经存在
         // 保存分类数据
     }

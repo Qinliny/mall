@@ -1,15 +1,33 @@
 <?php
 // 应用公共文件
+
 /**
- * 返回ajax数据
- * @param $messages     提示信息
- * @param $data         返回的数据
- * @param bool $isFail  是否为失败返回
+ * 失败请求返回的信息
+ * @param int $code
+ * @param string $messages
  */
-function returnAjax($messages, $data, $isFail = false) {
-    if ($isFail) {
+function failedAjax(int $code, string $messages) {
+    header('Content-Type:application/json');
+    $return = [
+        'code'      =>  $code,
+        'messages'  =>  $messages
+    ];
+    echo json_encode($return, true);
+    die;
+}
 
-    } else {
-
-    }
+/**
+ * 成功返回的信息
+ * @param string $message
+ * @param array $data
+ */
+function successAjax(string $message, $data = []) {
+    header('Content-Type:application/json');
+    $return = [
+        'code'      =>  0,
+        'messages'  =>  $message,
+        'data'      =>  $data
+    ];
+    echo json_encode($return, true);
+    die;
 }

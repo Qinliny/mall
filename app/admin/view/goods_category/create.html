@@ -33,6 +33,9 @@
                     <div class="layui-input-block">
                         <select name="category_parent">
                             <option value="0">无上级分类</option>
+                            {foreach $list as $key => $value}
+                            <option value="{$value.id}">{$value.category_name}</option>
+                            {/foreach}
                         </select>
                     </div>
                 </div>
