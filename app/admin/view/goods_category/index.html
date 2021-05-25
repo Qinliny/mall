@@ -18,12 +18,30 @@
             商品分类列表
         </div>
         <div class="layui-card-body">
+            <div class="layui-form layui-row layui-col-space10">
+                <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">分类名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="category_name" required  lay-verify="required" placeholder="请输入分类名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="search">查询结果</button>
+                            <button type="reset" class="layui-btn layui-btn-primary" id="reset">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="table-content">
                 <table id="list" lay-filter="list"></table>
             </div>
             <script type="text/html" id="test-table-toolbar-toolbarDemo">
                 <div class="layui-btn-container">
-                    <button class="layui-btn layui-btn-normal" id="create" lay-href="/admin/category/create" lay-event="getCheckData">添加商品分类</button>
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" id="create" lay-href="/admin/category/create" lay-event="getCheckData">添加商品分类</button>
                 </div>
             </script>
         </div>
@@ -37,8 +55,8 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 <script>
-    layui.use(['element','table','jquery'], function(){
-        var element = layui.element, table = layui.table, $ = layui.$;
+    layui.use(['element','table','jquery', 'form'], function(){
+        var element = layui.element, table = layui.table, $ = layui.$, form = layui.form;
 
         table.on('toolbar(list)', function(obj){
             if (obj.event == 'getCheckData') {
@@ -51,7 +69,7 @@
             console.log(obj.event)
         })
 
-        table.render({
+        var listTable = table.render({
             elem: '#list'
             ,toolbar: '#test-table-toolbar-toolbarDemo'
             ,url: '/admin/category/getList'
@@ -74,6 +92,28 @@
                 ,{field: 'operation', title: '操作', toolbar: "#barOperation"}
             ]]
         });
+        var thinsTableWhere;
+        form.on('submit(search)', function(data){
+            var category_name = data.field.category_name
+            listTable.reload({
+                where: {
+                    category_name: category_name
+                },
+                page: {
+                    curr: 1
+                },
+                done: function(){
+                    thinsTableWhere = this
+                }
+            })
+        });
+
+        $('#reset').on('click', function(){
+            $('input[name="category_name"]').val("")
+            thinsTableWhere.where = {}
+            listTable.reload('list')
+        })
+
     });
 </script>
 {/block}

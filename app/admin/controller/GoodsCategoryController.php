@@ -67,7 +67,11 @@ class GoodsCategoryController extends BaseController
         $param = $this->request->get();
         $page = isset($param['page']) && $param['page'] > 0 ? $param['page'] : 1;
         $limit = isset($param['limit']) && $param['limit'] > 0 ? $param['limit'] : 10;
-        $result = GoodsCategoryDb::getGoodsCategoryList($page, $limit);
+        $condition = [];
+        if (isset($param['category_name'])) {
+            $condition[] = ['category_name', 'like', '%' . $param['category_name'] . '%'];
+        }
+        $result = GoodsCategoryDb::getGoodsCategoryList($page, $limit, $condition);
         returnTables($result->total(), $result->items());
     }
 }

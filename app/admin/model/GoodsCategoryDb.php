@@ -16,9 +16,10 @@ class GoodsCategoryDb extends BaseDb
      * 返回商品分类列表的数据
      * @return bool|\think\Collection
      */
-    public static function getGoodsCategoryList(int $page, int $limit = 10) {
+    public static function getGoodsCategoryList(int $page, int $limit = 10, $condition = []) {
         try {
             $result = self::Db(self::$table)
+                ->where($condition)
                 ->field('id, category_name, parent_id, sort, status, create_time')
                 ->order('id', 'desc')
                 ->paginate(['list_rows'=>$limit, 'page'=>$page])
