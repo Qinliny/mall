@@ -63,15 +63,66 @@ class GoodsCategoryController extends BaseController
         }
     }
 
+    /**
+     * 获取分类数据
+     */
     public function getGoodsCategoryList() {
         $param = $this->request->get();
         $page = isset($param['page']) && $param['page'] > 0 ? $param['page'] : 1;
         $limit = isset($param['limit']) && $param['limit'] > 0 ? $param['limit'] : 10;
+        $parentId = isset($param['parent_id']) ? $param['parent_id'] : 0;
         $condition = [];
         if (isset($param['category_name'])) {
             $condition[] = ['category_name', 'like', '%' . $param['category_name'] . '%'];
         }
+        $condition[] = ['parent_id', '=', $parentId];
         $result = GoodsCategoryDb::getGoodsCategoryList($page, $limit, $condition);
+        if($result === false) {
+            abort(__LINE__, '获取分类列表数据失败！');
+        }
         returnTables($result->total(), $result->items());
+    }
+
+    /**
+     * 修改分类状态
+     */
+    public function updateGoodsCategoryStatus() {
+        // 获取数据的ID
+        $id = $this->request->post('id');
+        // 获取修改的状态
+        $status = $this->request->post('status');
+        $status = in_array((int)$status, [0, 1]) ? $status : 0;
+        if (empty($id)) failedAjax(__LINE__, "参数异常");
+        // 判断当前数据是否存在
+        $info = GoodsCategoryDb::getGoodsCategoryDataById($id);
+        if ($info === false) failedAjax(__LINE__, "获取分类数据异常！");
+        if (empty($info)) failedAjax(__LINE__, "分类信息不存在！");
+
+        // 判断是否是一级状态，如果是一级状态则修改一级分类的状态以及下面所有的二级的状态，反之只修改当前状态
+        if ($info['parent_id'] == 0) {
+            // 状态关闭
+            if ($status == 1) {
+                // 获取所有的二级分类信息
+                $childData = GoodsCategoryDb::getGoodsCategoryChildDataById($info['id']);
+                $childDataId = array_column($childData->toArray(), 'id');
+                array_push($childDataId, $info['id']);
+                $condition = [
+                    ['id', 'in', $childDataId]
+                ];
+            } else {
+                $condition = [
+                    ['id', '=', $id]
+                ];
+            }
+        } else {
+            $condition = [
+                ['id', '=', $id]
+            ];
+        }
+        $res = GoodsCategoryDb::updateGoodsCategoryData($condition, ['status'=>$status]);
+        if ($res === false) {
+            failedAjax(__LINE__, "状态更新失败！");
+        }
+        successAjax("状态更新成功！");
     }
 }

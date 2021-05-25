@@ -60,9 +60,17 @@ class GoodsCategoryDb extends BaseDb
         }
     }
 
-
+    /**
+     * 获取一级分类ID下的所有二级分类
+     * @param int $id   一级分类id
+     */
     public static function getGoodsCategoryChildDataById(int $id) {
-
+        try {
+            $result = self::Db(self::$table)->where('parent_id', $id)->select();
+            return $result;
+        } catch (Exception $exception) {
+            return false;
+        }
     }
 
     /**
@@ -97,6 +105,21 @@ class GoodsCategoryDb extends BaseDb
             return self::Db(self::$table)
                     ->where('category_name', $categoryName)
                     ->find();
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * 更新分类数据
+     * @param array $condition  更新条件
+     * @param array $data       需要更新的数据
+     * @return bool|int         返回值 失败返回false
+     */
+    public static function updateGoodsCategoryData(array $condition, array $data) {
+        try {
+            $res = self::Db(self::$table)->where($condition)->update($data);
+            return $res;
         } catch (Exception $exception) {
             return false;
         }

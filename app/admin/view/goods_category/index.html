@@ -66,7 +66,21 @@
         })
 
         table.on('tool(list)', function (obj) {
-            console.log(obj.event)
+            if (obj.event == 'check') {
+                if (obj.data.parent_id == 0) {
+                    listTable.reload({
+                        where: {
+                            parent_id: obj.data.id
+                        },
+                        page: {
+                            curr: 1
+                        },
+                        done: function(){
+                            thinsTableWhere = this
+                        }
+                    })
+                }
+            }
         })
 
         var listTable = table.render({
@@ -82,13 +96,20 @@
                 ,{field: 'create_time', title: '添加时间'}
                 ,{field: 'status', title: '状态', templet: function(data){
                         if (data.status == 0) {
-                            return '<input type="checkbox" name="status" lay-skin="switch" lay-text="开启|关闭" checked>'
+                            return '<input type="checkbox" name="status" value="'+data.id+'" lay-filter="status" lay-skin="switch" lay-text="开启|关闭" checked>'
                         } else {
-                            return '<input type="checkbox" name="status" lay-skin="switch" lay-text="开启|关闭">'
+                            return '<input type="checkbox" name="status" value="'+data.id+'" lay-filter="status" lay-skin="switch" lay-text="开启|关闭">'
                         }
                     }
                 }
-                // ,{field: 'sign', title: '查看下级'}
+                ,{field: 'check', title: '查看下级', templet: function(data){
+                        if (data.parent_id == 0) {
+                            return '<button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="check">查看下级</button>';
+                        } else {
+                            return ""
+                        }
+                    }
+                }
                 ,{field: 'operation', title: '操作', toolbar: "#barOperation"}
             ]]
         });
@@ -112,6 +133,29 @@
             $('input[name="category_name"]').val("")
             thinsTableWhere.where = {}
             listTable.reload('list')
+        })
+
+        form.on('switch(status)', function(data){
+            var status = data.elem.checked === false ? 1 : 0
+            var id = data.value
+            var loading = layer.load(1, {
+                shade: [0.3,'#000']
+            });
+            $.post('/admin/category/updateStatus', {id: id, status: status}, function(resp){
+                layer.closeAll()
+                if (resp.code == 0) {
+                    layer.msg(resp.message, {icon: 1})
+                } else {
+                    layer.msg(resp.error, {icon: 5})
+                    $(data.elem).prop('checked', !data.elem.checked)
+                    form.render()
+                }
+            }).error(function(){
+                layer.closeAll()
+                layer.msg("更新状态失败，服务器出现异常！", {icon: 5})
+                $(data.elem).prop('checked', !data.elem.checked)
+                form.render()
+            })
         })
 
     });

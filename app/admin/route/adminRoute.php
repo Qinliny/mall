@@ -14,4 +14,5 @@ Route::group('/category', function(){
     Route::get("/create", "GoodsCategoryController/createCategory");
     Route::post("/saveCreateData", "GoodsCategoryController/saveCreateData");
     Route::get('/getList', "GoodsCategoryController/getGoodsCategoryList");
+    Route::post('/updateStatus', 'GoodsCategoryController/updateGoodsCategoryStatus');
 })->middleware(app\admin\middleware\Auth::class);
