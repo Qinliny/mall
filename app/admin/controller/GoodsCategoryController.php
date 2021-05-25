@@ -42,8 +42,15 @@ class GoodsCategoryController extends BaseController
         try {
             // 验证数据
             validate(GoodsCategoryValidate::class)->check($param);
+            // 判断是否已存在
+            $categoryInfo = GoodsCategoryDb::getGoodsCategoryDataByName($param['category_name']);
+
+            if ($categoryInfo === false) throw new Exception("获取分类信息失败！", __LINE__);
+
+            if (!empty($categoryInfo)) throw new Exception("分类信息已存在！", __LINE__);
+
             // 保存分类数据
-            $res = GoodsCategorWyDb::createData($param);
+            $res = GoodsCategoryDb::createData($param);
             if ($res) {
                 successAjax("商品分类信息创建成功！");
             }

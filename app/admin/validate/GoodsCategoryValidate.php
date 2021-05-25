@@ -11,7 +11,7 @@ use think\Validate;
 class GoodsCategoryValidate extends Validate
 {
     protected $rule = [
-        'category_name'     =>  'require|length:1,6|unique:qinly_goods_category',
+        'category_name'     =>  'require|length:1,6',
         'category_parent'   =>  'require|integer',
         'sort'              =>  'require|between:0,100'
     ];
@@ -19,7 +19,6 @@ class GoodsCategoryValidate extends Validate
     protected $message = [
         'category_name.require'     =>  '请输入商品分类名称',
         'category_name.length'      =>  '商品分类名称的长度只能为1-6个字符',
-        'category_name.unique'      =>  '商品分类信息已存在，请勿重复添加！',
         'category_parent.require'   =>  '请选择商品分类',
         'category_parent.integer'   =>  '请选择正确的商品分类',
         'sort.require'              =>  '请输入商品分类的排序',

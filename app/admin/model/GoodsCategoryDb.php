@@ -34,6 +34,7 @@ class GoodsCategoryDb extends BaseDb
             $result = self::Db(self::$table)->where('parent_id', 0)->order('id', 'desc')->select();
             return $result;
         } catch (Exception $exception) {
+            dd($exception);
             return false;
         }
     }
@@ -74,6 +75,7 @@ class GoodsCategoryDb extends BaseDb
             $res = self::Db(self::$table)->insert($insertData);
             return $res > 0;
         } catch (Exception $exception) {
+            dd($exception);
             return false;
         }
     }

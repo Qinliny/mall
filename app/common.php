@@ -7,8 +7,8 @@
 function failedAjax(int $code, string $messages) {
     header('Content-Type:application/json');
     $return = [
-        'code'      =>  $code,
-        'messages'  =>  $messages
+        'code'    =>  $code,
+        'errors'  =>  $messages
     ];
     echo json_encode($return, true);
     die;
@@ -22,9 +22,9 @@ function failedAjax(int $code, string $messages) {
 function successAjax(string $message, $data = []) {
     header('Content-Type:application/json');
     $return = [
-        'code'      =>  0,
-        'messages'  =>  $message,
-        'data'      =>  $data
+        'code'     =>  0,
+        'message'  =>  $message,
+        'data'     =>  $data
     ];
     echo json_encode($return, true);
     die;

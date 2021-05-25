@@ -90,7 +90,12 @@
             $.post('/admin/category/saveCreateData', data.field, function(resp){
                 layer.closeAll()
                 if (resp.code == 0) {
-                    layer.msg(resp.mesages, {icon: 1});
+                    $('input[name="category_name"]').val("")
+                    $('select[name="category_parent"]').val("")
+                    $('input[name="sort"]').val("0")
+                    layer.msg(resp.message, {icon: 1});
+                } else {
+                    layer.msg(resp.errors, {icon: 5})
                 }
             }).error(function(){
                 layer.closeAll()
