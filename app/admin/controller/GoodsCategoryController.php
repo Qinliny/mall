@@ -62,4 +62,12 @@ class GoodsCategoryController extends BaseController
             failedAjax($exception->getCode(), $exception->getMessage());
         }
     }
+
+    public function getGoodsCategoryList() {
+        $param = $this->request->get();
+        $page = isset($param['page']) && $param['page'] > 0 ? $param['page'] : 1;
+        $limit = isset($param['limit']) && $param['limit'] > 0 ? $param['limit'] : 10;
+        $result = GoodsCategoryDb::getGoodsCategoryList($page, $limit);
+        returnTables($result->total(), $result->items());
+    }
 }

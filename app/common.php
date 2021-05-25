@@ -31,6 +31,23 @@ function successAjax(string $message, $data = []) {
 }
 
 /**
+ * 前端表格获取数据返回
+ * @param int $count
+ * @param array $data
+ */
+function returnTables(int $count, $data = []) {
+    header('Content-Type:application/json');
+    $return = [
+        'code'  =>  0,
+        'msg'   =>  "",
+        'count' =>  $count > 0 ? $count : 0,
+        'data'  =>  $data
+    ];
+    echo json_encode($return, true);
+    die;
+}
+
+/**
  * 返回当前时间格式  2021-05-25 01:08:55
  * @return string   当前时间 年月日 时分秒
  */

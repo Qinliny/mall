@@ -18,7 +18,14 @@ class GoodsCategoryDb extends BaseDb
      */
     public static function getGoodsCategoryList(int $page, int $limit = 10) {
         try {
-            $result = self::Db(self::$table)->order('id', 'desc')->paginate(['list_rows'=>$limit, 'page'=>$page]);
+            $result = self::Db(self::$table)
+                ->field('id, category_name, parent_id, sort, status, create_time')
+                ->order('id', 'desc')
+                ->paginate(['list_rows'=>$limit, 'page'=>$page])
+                ->each(function($item, $key){
+                    $item['level'] = $item['parent_id'] == 0 ? "一级分类" : "二级分类";
+                    return $item;
+                });
             return $result;
         } catch (Exception $exception) {
             return false;
@@ -34,7 +41,6 @@ class GoodsCategoryDb extends BaseDb
             $result = self::Db(self::$table)->where('parent_id', 0)->order('id', 'desc')->select();
             return $result;
         } catch (Exception $exception) {
-            dd($exception);
             return false;
         }
     }
