@@ -1,0 +1,150 @@
+{extend name="common/childPublic"}
+
+{block name="title"}添加后台管理员{/block}
+
+{block name="content"}
+<span class="layui-breadcrumb">
+    <a>
+        <cite>权限管理</cite>
+    </a>
+    <a href="javascript:;" lay-href="/admin/admins" lay-name="管理员列表" id="openView">
+        <cite>管理员列表</cite>
+    </a>
+    <a>
+        <cite>添加管理员</cite>
+    </a>
+</span>
+
+<div class="row" style="margin-top: 15px">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            填写新的管理员信息
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form layui-row">
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">管理员姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="admins_name" required  lay-verify="required|lengths" placeholder="请输入管理员姓名" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">手机号码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" required  lay-verify="required|lengths" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">电子邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="email" required  lay-verify="required|lengths" placeholder="请输入电子邮箱" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">微信账号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="wx_number" required  lay-verify="required|lengths" placeholder="请输入微信账号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">QQ号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="qq_number" required  lay-verify="required|lengths" placeholder="请输QQ号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">籍贯</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请输入籍贯" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">出生年月日</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请选择出生年月日" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">性别</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请选择性别" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">登录密码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请输入登录密码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">确认密码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请再次确认密码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-col-md7">
+                    <label class="layui-form-label">角色</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请选择角色" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="save">立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script>
+    layui.use(['element','layer','jquery'], function(){
+        var element = layui.element, layer = layui.layer, $ = layui.$, form = layui.form;
+        // 点击面包屑返回商品分类页面
+        $('#openView').on('click', function(){
+            var targetUrl = $(this).attr('lay-href')
+            var targetName = $(this).attr('lay-name')
+            top.layui.index.openTabsPage(targetUrl, targetName);
+        });
+
+        // 验证表单的值
+        form.verify({
+            lengths: function(value, item){
+                if (value.length > 6 || value.length < 1) {
+                    return "分类名称长度为1-6"
+                }
+            },
+            sortValue: function(value, item) {
+                if (value > 100 || value < 0) {
+                    return "排序的值必须在0-100内"
+                }
+            }
+        })
+
+        // 提交表单
+        form.on('submit(save)', function(data){
+            var index = layer.load(1, {
+                shade: [0.3,'#000']
+            });
+            $.post('/admin/category/saveCreateData', data.field, function(resp){
+                layer.closeAll()
+                if (resp.code == 0) {
+                    $('input[name="category_name"]').val("")
+                    $('select[name="category_parent"]').val("")
+                    $('input[name="sort"]').val("0")
+                    layer.msg(resp.message, {icon: 1});
+                } else {
+                    layer.msg(resp.errors, {icon: 5})
+                }
+            }).error(function(){
+                layer.closeAll()
+                layer.msg("添加分类数据失败，服务器出现异常！", {icon: 5})
+            })
+        });
+    });
+</script>
+{/block}

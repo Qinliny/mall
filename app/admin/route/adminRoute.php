@@ -21,4 +21,5 @@ Route::group('/category', function(){
 // 管理员列表
 Route::group('/admins', function(){
     Route::get('/', 'AdminController/admins');
+    Route::get('/create', 'AdminController/createAdmins');
 })->middleware(app\admin\middleware\Auth::class);

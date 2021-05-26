@@ -61,11 +61,6 @@
 
     <div class="layui-card">
         <table id="list" lay-filter="list"></table>
-        <script type="text/html" id="test-table-toolbar-toolbarDemo">
-            <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-normal" lay-event="getCheckData">添加商品</button>
-            </div>
-        </script>
     </div>
 </div>
 {/block}
@@ -77,7 +72,6 @@
 
         table.render({
             elem: '#list'
-            ,toolbar: '#test-table-toolbar-toolbarDemo'
             ,url: '/demo/table/user/'
             ,page: true
             ,cols: [[
