@@ -23,3 +23,9 @@ Route::group('/admins', function(){
     Route::get('/', 'AdminController/admins');
     Route::get('/create', 'AdminController/createAdmins');
 })->middleware(app\admin\middleware\Auth::class);
+
+// 角色管理
+Route::group('/role', function(){
+    Route::get('/', 'AuthController/role');
+    Route::get('/create', 'AuthController/createRole');
+})->middleware(app\admin\middleware\Auth::class);

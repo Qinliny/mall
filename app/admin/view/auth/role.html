@@ -1,0 +1,161 @@
+{extend name="common/childPublic"}
+
+{block name="title"}角色管理{/block}
+
+{block name="content"}
+<span class="layui-breadcrumb">
+    <a>
+        <cite>权限管理</cite>
+    </a>
+    <a>
+        <cite>角色管理</cite>
+    </a>
+</span>
+
+<div class="row" style="margin-top: 15px">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            角色管理列表
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form layui-row layui-col-space10">
+                <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            角色名称
+                        </label>
+                        <div class="layui-input-block">
+                            <input type="text" name="role_name" required  lay-verify="required" placeholder="请输入角色名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="search">查询结果</button>
+                            <button type="reset" class="layui-btn layui-btn-primary" id="reset">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-content">
+                <table id="list" lay-filter="list"></table>
+            </div>
+            <script type="text/html" id="test-table-toolbar-toolbarDemo">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="addRole">添加角色</button>
+                </div>
+            </script>
+        </div>
+    </div>
+</div>
+
+<div id="createBox" style="display: none">
+    <div class="form-box" style="padding: 15px;box-sizing: border-box">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="role_name" required  lay-verify="required" placeholder="请输入角色名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="createRole">立即提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script type="text/html" id="barOperation">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    layui.use(['element','table','jquery', 'form'], function(){
+        var element = layui.element, table = layui.table, $ = layui.$, form = layui.form;
+
+        function screen() {
+            //获取当前窗口的宽度
+            var width = $(window).width();
+            if (width > 1200) {
+                return 3;   //大屏幕
+            } else if (width > 992) {
+                return 2;   //中屏幕
+            } else if (width > 768) {
+                return 1;   //小屏幕
+            } else {
+                return 0;   //超小屏幕
+            }
+        }
+
+        table.on('toolbar(list)', function(obj){
+            if (obj.event == 'addRole') {
+                var elements = $('#createBox').html();
+                layer.open({
+                    type: 1,
+                    title: "添加角色",
+                    skin: 'layui-layer-demo',
+                    closeBtn: 1,
+                    anim: 2,
+                    area: screen() < 2 ? ['90%', '80%'] : ['500px', '200px'],   // 长，宽
+                    shadeClose: true, //开启遮罩关闭
+                    content: elements
+                });
+            }
+        })
+
+        var listTable = table.render({
+            elem: '#list'
+            ,toolbar: '#test-table-toolbar-toolbarDemo'
+            ,url: '/admin/category'
+            ,page: true
+            ,cols: [[
+                {field: '', title: '序号', type: 'numbers'}
+                ,{field: 'category_name', title: '角色名称'}
+                ,{field: 'status', title: '状态', templet: function(data){
+                        if (data.status == 0) {
+                            return '<input type="checkbox" name="status" value="'+data.id+'" lay-filter="status" lay-skin="switch" lay-text="开启|关闭" checked>'
+                        } else {
+                            return '<input type="checkbox" name="status" value="'+data.id+'" lay-filter="status" lay-skin="switch" lay-text="开启|关闭">'
+                        }
+                    }
+                }
+                ,{field: 'sort', title: '创建时间'}
+                ,{field: 'operation', title: '操作', toolbar: "#barOperation"}
+            ]]
+        });
+        
+        var thinsTableWhere;
+        form.on('submit(createRole)', function(data){
+            var role_name = data.field.role_name
+            if (role_name.length > 10) {
+                layer.msg("角色名称长度不能超过10个字符", {icon: 5});
+                return false
+            }
+            var loading = layer.load(1, {shade: [0.3,'#000']});
+            $.post('/admin/role/create', {roleName: role_name}, function(resp){
+                layer.closeAll()
+            }).error(function(){
+                layer.closeAll()
+                layer.msg("添加角色名称失败，服务器出现异常！", {icon: 5})
+            });
+            // listTable.reload({
+            //     where: {
+            //         category_name: category_name
+            //     },
+            //     page: {
+            //         curr: 1
+            //     },
+            //     done: function(){
+            //         thinsTableWhere = this
+            //     }
+            // })
+        });
+
+    });
+</script>
+{/block}
