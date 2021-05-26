@@ -124,4 +124,18 @@ class GoodsCategoryDb extends BaseDb
             return false;
         }
     }
+
+    /**
+     * 删除分类数据
+     * @param array $condition
+     * @return false|int
+     */
+    public static function deleteGoodsCategory(array $condition) {
+        try {
+            $res = self::Db(self::$table)->where($condition)->delete();
+            return $res;
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
 }

@@ -15,4 +15,10 @@ Route::group('/category', function(){
     Route::post("/saveCreateData", "GoodsCategoryController/saveCreateData");
     Route::get('/getList', "GoodsCategoryController/getGoodsCategoryList");
     Route::post('/updateStatus', 'GoodsCategoryController/updateGoodsCategoryStatus');
+    Route::post('/delete', 'GoodsCategoryController/deleteGoodsCategory');
+})->middleware(app\admin\middleware\Auth::class);
+
+// 管理员列表
+Route::group('/admins', function(){
+    Route::get('/', 'AdminController/admins');
 })->middleware(app\admin\middleware\Auth::class);

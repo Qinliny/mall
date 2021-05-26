@@ -66,22 +66,52 @@
         })
 
         table.on('tool(list)', function (obj) {
-            if (obj.event == 'check') {
-                if (obj.data.parent_id == 0) {
-                    listTable.reload({
-                        where: {
-                            parent_id: obj.data.id
-                        },
-                        page: {
-                            curr: 1
-                        },
-                        done: function(){
-                            thinsTableWhere = this
-                        }
-                    })
-                }
+            switch (obj.event) {
+                case 'check':
+                    if (obj.data.parent_id == 0) {
+                        listTable.reload({
+                            where: {
+                                parent_id: obj.data.id
+                            },
+                            page: {
+                                curr: 1
+                            },
+                            done: function(){
+                                thinsTableWhere = this
+                            }
+                        })
+                    }
+                    break;
+                case 'del':
+                    deleteData(obj)
+                    break;
             }
         })
+
+        function deleteData(obj) {
+            var confirm = layer.confirm('确定要删除当前分类吗？', {
+                title: "提示信息",
+                btn: ['确定','取消'],
+                icon: 5
+            }, function(){
+                layer.close(confirm)
+                var loading = layer.load(1, {shade: [0.3,'#000']});
+                $.post('/admin/category/delete', {id: obj.data.id}, function(resp) {
+                    layer.closeAll()
+                    if (resp.code == 0) {
+                        obj.del();
+                        layer.msg(resp.message, {icon: 1})
+                    } else {
+                        layer.msg(resp.errors, {icon: 5})
+                    }
+                }).error(function(){
+                    layer.closeAll()
+                    layer.msg("删除失败，服务器出现异常！", {icon: 5})
+                })
+            }, function(){
+                layer.close(confirm)
+            });
+        }
 
         var listTable = table.render({
             elem: '#list'
@@ -146,7 +176,7 @@
                 if (resp.code == 0) {
                     layer.msg(resp.message, {icon: 1})
                 } else {
-                    layer.msg(resp.error, {icon: 5})
+                    layer.msg(resp.errors, {icon: 5})
                     $(data.elem).prop('checked', !data.elem.checked)
                     form.render()
                 }

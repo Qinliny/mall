@@ -1,0 +1,98 @@
+{extend name="common/childPublic"}
+
+{block name="title"}管理员列表{/block}
+
+{block name="content"}
+<span class="layui-breadcrumb">
+    <a>
+        <cite>权限管理</cite>
+    </a>
+    <a>
+        <cite>管理员列表</cite>
+    </a>
+</span>
+
+<div class="row" style="margin-top: 15px">
+    <div class="layui-card">
+        <div class="layui-collapse">
+            <div class="layui-colla-item">
+                <h2 class="layui-colla-title">
+                    高级搜索
+                </h2>
+                <div class="layui-colla-content layui-show">
+                    <div class="layui-row layui-col-space10 demo-list layui-form">
+                        <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">管理员账号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="title" required  lay-verify="required" placeholder="管理员账号" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">管理员名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="title" required  lay-verify="required" placeholder="管理员名称" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">角色</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="title" required  lay-verify="required" placeholder="角色" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="formDemo">查询结果</button>
+                                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-card">
+        <table id="list" lay-filter="list"></table>
+        <script type="text/html" id="test-table-toolbar-toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal" lay-event="getCheckData">添加商品</button>
+            </div>
+        </script>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script>
+    layui.use(['element','table'], function(){
+        var element = layui.element, table = layui.table;
+
+        table.render({
+            elem: '#list'
+            ,toolbar: '#test-table-toolbar-toolbarDemo'
+            ,url: '/demo/table/user/'
+            ,page: true
+            ,cols: [[
+                {field: 'id', title: '编号', width:80, sort: true, fixed: 'left'}
+                ,{field: 'username', title: '商品图片', width:150}
+                ,{field: 'sex', title: '商品名称', width:150, sort: true}
+                ,{field: 'city', title: '价格/货号', width:150}
+                ,{field: 'sign', title: '标签', width: 150}
+                ,{field: 'experience', title: '排序', width: 80, sort: true}
+                ,{field: 'score', title: 'SKU库存', width: 120, sort: true}
+                ,{field: 'classify', title: '销量', width: 80}
+                ,{field: 'wealth', title: '审核状态', width: 135, sort: true}
+                ,{field: 'wealths', title: '操作', width: 135, sort: true}
+            ]]
+        });
+    });
+</script>
+{/block}

@@ -65,6 +65,10 @@ class GoodsCategoryController extends BaseController
 
     /**
      * 获取分类数据
+     * @param   $page        int 分页
+     * @param   $limit       int 数据条数
+     * @param   $parent_id   int 父级分类ID
+     * @param   $category_name   string  查询分类名称
      */
     public function getGoodsCategoryList() {
         $param = $this->request->get();
@@ -74,8 +78,10 @@ class GoodsCategoryController extends BaseController
         $condition = [];
         if (isset($param['category_name'])) {
             $condition[] = ['category_name', 'like', '%' . $param['category_name'] . '%'];
+        } else {
+            $condition[] = ['parent_id', '=', $parentId];
         }
-        $condition[] = ['parent_id', '=', $parentId];
+
         $result = GoodsCategoryDb::getGoodsCategoryList($page, $limit, $condition);
         if($result === false) {
             abort(__LINE__, '获取分类列表数据失败！');
@@ -85,6 +91,8 @@ class GoodsCategoryController extends BaseController
 
     /**
      * 修改分类状态
+     * @param   $id      分类的ID
+     * @param   $status  修改的状态
      */
     public function updateGoodsCategoryStatus() {
         // 获取数据的ID
@@ -115,14 +123,55 @@ class GoodsCategoryController extends BaseController
                 ];
             }
         } else {
-            $condition = [
-                ['id', '=', $id]
-            ];
+            if ($status == 1) {
+                $condition = [
+                    ['id', '=', $id]
+                ];
+            } else {
+                $condition = [
+                    ['id', 'in', [$info['parent_id'], $id]]
+                ];
+            }
         }
-        $res = GoodsCategoryDb::updateGoodsCategoryData($condition, ['status'=>$status]);
+        $res = GoodsCategoryDb::updateGoodsCategoryData($condition, ['status'=>$status,'update_time'=>thisTime()]);
         if ($res === false) {
             failedAjax(__LINE__, "状态更新失败！");
         }
         successAjax("状态更新成功！");
+    }
+
+    /**
+     * 删除分类
+     * @param   $id  int   分类id
+     */
+    public function deleteGoodsCategory() {
+        $id = $this->request->post('id');
+        if(empty($id)) failedAjax("参数异常！");
+
+        // 判断当前数据是否存在
+        $info = GoodsCategoryDb::getGoodsCategoryDataById($id);
+        if ($info === false) failedAjax(__LINE__, "获取分类数据异常！");
+        if (empty($info)) failedAjax(__LINE__, "分类信息不存在！");
+
+        if ($info['parent_id'] == 0) {
+            // 以及分类需要将下面所有二级的都进行删除
+            // 获取所有的二级分类信息
+            $childData = GoodsCategoryDb::getGoodsCategoryChildDataById($info['id']);
+            $childDataId = array_column($childData->toArray(), 'id');
+            array_push($childDataId, $info['id']);
+            $condition = [
+                ['id', 'in', $childDataId]
+            ];
+        } else {
+            $condition = [
+                ['id', '=', $id]
+            ];
+        }
+
+        $result = GoodsCategoryDb::deleteGoodsCategory($condition);
+        if ($result === false) {
+            failedAjax(__LINE__, "删除失败！");
+        }
+        successAjax("删除成功！");
     }
 }
