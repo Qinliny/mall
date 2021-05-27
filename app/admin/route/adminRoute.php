@@ -27,5 +27,13 @@ Route::group('/admins', function(){
 // 角色管理
 Route::group('/role', function(){
     Route::get('/', 'AuthController/role');
-    Route::get('/create', 'AuthController/createRole');
+    Route::get('/list', 'AuthController/getRoleList');
+    Route::post('/create', 'AuthController/createRole');
+    Route::post('/update', 'AuthController/updateRole');
+    Route::post('/delete', 'AuthController/deleteRole');
+})->middleware(app\admin\middleware\Auth::class);
+
+// 菜单管理
+Route::group('/rule', function(){
+    Route::get('/', 'AuthController/rule');
 })->middleware(app\admin\middleware\Auth::class);

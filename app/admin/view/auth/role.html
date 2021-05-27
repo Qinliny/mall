@@ -71,26 +71,13 @@
 
 {block name="js"}
 <script type="text/html" id="barOperation">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="setRule">设置权限</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 <script>
-    layui.use(['element','table','jquery', 'form'], function(){
-        var element = layui.element, table = layui.table, $ = layui.$, form = layui.form;
-
-        function screen() {
-            //获取当前窗口的宽度
-            var width = $(window).width();
-            if (width > 1200) {
-                return 3;   //大屏幕
-            } else if (width > 992) {
-                return 2;   //中屏幕
-            } else if (width > 768) {
-                return 1;   //小屏幕
-            } else {
-                return 0;   //超小屏幕
-            }
-        }
+    layui.use(['table','jquery', 'form'], function(){
+        var table = layui.table, $ = layui.$, form = layui.form;
 
         table.on('toolbar(list)', function(obj){
             if (obj.event == 'addRole') {
@@ -101,7 +88,7 @@
                     skin: 'layui-layer-demo',
                     closeBtn: 1,
                     anim: 2,
-                    area: screen() < 2 ? ['90%', '80%'] : ['500px', '200px'],   // 长，宽
+                    area: screen() < 2 ? ['90%', '25%'] : ['500px', '200px'],   // 长，宽
                     shadeClose: true, //开启遮罩关闭
                     content: elements
                 });
@@ -111,11 +98,11 @@
         var listTable = table.render({
             elem: '#list'
             ,toolbar: '#test-table-toolbar-toolbarDemo'
-            ,url: '/admin/category'
+            ,url: '/admin/role/list'
             ,page: true
             ,cols: [[
                 {field: '', title: '序号', type: 'numbers'}
-                ,{field: 'category_name', title: '角色名称'}
+                ,{field: 'role_name', title: '角色名称'}
                 ,{field: 'status', title: '状态', templet: function(data){
                         if (data.status == 0) {
                             return '<input type="checkbox" name="status" value="'+data.id+'" lay-filter="status" lay-skin="switch" lay-text="开启|关闭" checked>'
@@ -124,37 +111,148 @@
                         }
                     }
                 }
-                ,{field: 'sort', title: '创建时间'}
+                ,{field: 'create_time', title: '创建时间'}
                 ,{field: 'operation', title: '操作', toolbar: "#barOperation"}
             ]]
         });
         
-        var thinsTableWhere;
+        var thisTableWhere;
         form.on('submit(createRole)', function(data){
             var role_name = data.field.role_name
             if (role_name.length > 10) {
                 layer.msg("角色名称长度不能超过10个字符", {icon: 5});
                 return false
             }
-            var loading = layer.load(1, {shade: [0.3,'#000']});
+            layer.load(1, {shade: [0.3,'#000']});
             $.post('/admin/role/create', {roleName: role_name}, function(resp){
                 layer.closeAll()
+                if(resp.code == 0) {
+                    listTable.reload('list')
+                    layer.msg(resp.message, {icon: 1})
+                } else {
+                    layer.msg(resp.errors, {icon: 1})
+                }
             }).error(function(){
                 layer.closeAll()
                 layer.msg("添加角色名称失败，服务器出现异常！", {icon: 5})
             });
-            // listTable.reload({
-            //     where: {
-            //         category_name: category_name
-            //     },
-            //     page: {
-            //         curr: 1
-            //     },
-            //     done: function(){
-            //         thinsTableWhere = this
-            //     }
-            // })
         });
+
+        form.on('submit(search)', function(data){
+            var role_name = data.field.role_name
+            listTable.reload({
+                where: {
+                    role_name: role_name
+                },
+                page: {
+                    curr: 1
+                },
+                done: function(){
+                    thisTableWhere = this
+                }
+            })
+        });
+
+        $('#reset').on('click', function(){
+            $('input[name="role_name"]').val("")
+            if (typeof thisTableWhere != 'undefined') {
+                thisTableWhere.where = {}
+            }
+            listTable.reload('list')
+        })
+
+        table.on('tool(list)', function (obj) {
+            switch (obj.event) {
+                case 'edit':
+                    var elements = $('#createBox').html();
+                    layer.open({
+                        type: 1,
+                        title: "编辑角色信息",
+                        skin: 'layui-layer-demo',
+                        closeBtn: 1,
+                        anim: 2,
+                        area: screen() < 2 ? ['90%', '80%'] : ['500px', '200px'],   // 长，宽
+                        shadeClose: true,
+                        content: elements,
+                        success: function() {
+                            $('.layui-layer-content').find('input[name="role_name"]').val(obj.data.role_name)
+                            $('.layui-layer-content').find('.layui-btn').attr('lay-filter', 'updateRole')
+
+                            form.on('submit(updateRole)', function(data){
+                                var role_name = data.field.role_name
+                                if (role_name.length > 10) {
+                                    layer.msg("角色名称长度不能超过10个字符", {icon: 5});
+                                    return false
+                                }
+                                // 没有修改不用发送请求
+                                if (role_name == obj.data.role_name) {
+                                    layer.closeAll()
+                                    return false
+                                }
+                                layer.load(1, {shade: [0.3,'#000']});
+                                $.post('/admin/role/update', {roleName: role_name, roleId: obj.data.id, type: "updateRoleName"}, function(resp){
+                                    layer.closeAll()
+                                    if(resp.code == 0) {
+                                        listTable.reload('list')
+                                        layer.msg(resp.message, {icon: 1})
+                                    } else {
+                                        layer.msg(resp.errors, {icon: 1})
+                                    }
+                                }).error(function(){
+                                    layer.closeAll()
+                                    layer.msg("角色信息修改失败，服务器出现异常！", {icon: 5})
+                                });
+                            });
+                        }
+                    });
+                    break;
+                case 'del':
+                    deleteData(obj)
+                    break;
+            }
+        })
+
+        form.on('switch(status)', function(data){
+            var status = data.elem.checked === false ? 1 : 0
+            var id = data.value
+            layer.load(1, {shade: [0.3,'#000']});
+            $.post('/admin/role/update', {roleId: id, status: status, type: "updateStatus"}, function(resp){
+                layer.closeAll()
+                if (resp.code == 0) {
+                    layer.msg(resp.message, {icon: 1})
+                } else {
+                    layer.msg(resp.errors, {icon: 5})
+                }
+            }).error(function(){
+                layer.closeAll()
+                layer.msg("更新状态失败，服务器出现异常！", {icon: 5})
+            })
+        })
+
+        function deleteData(obj) {
+            var confirm = layer.confirm('确定要删除当前角色吗？', {
+                title: "提示信息",
+                btn: ['确定','取消'],
+                icon: 5
+            }, function(){
+                layer.close(confirm)
+                layer.load(1, {shade: [0.3,'#000000']});
+                $.post('/admin/role/delete', {roleId: obj.data.id}, function(resp) {
+                    layer.closeAll()
+                    if (resp.code == 0) {
+                        obj.del();
+                        layer.msg(resp.message, {icon: 1})
+                    } else {
+                        layer.msg(resp.errors, {icon: 5})
+                    }
+                }).error(function(){
+                    layer.closeAll()
+                    layer.msg("删除失败，服务器出现异常！", {icon: 5})
+                })
+            }, function(){
+                layer.close(confirm)
+            });
+        }
 
     });
 </script>

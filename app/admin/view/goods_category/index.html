@@ -95,7 +95,7 @@
                 icon: 5
             }, function(){
                 layer.close(confirm)
-                var loading = layer.load(1, {shade: [0.3,'#000']});
+                layer.load(1, {shade: [0.3,'#000000']});
                 $.post('/admin/category/delete', {id: obj.data.id}, function(resp) {
                     layer.closeAll()
                     if (resp.code == 0) {
@@ -168,9 +168,7 @@
         form.on('switch(status)', function(data){
             var status = data.elem.checked === false ? 1 : 0
             var id = data.value
-            var loading = layer.load(1, {
-                shade: [0.3,'#000']
-            });
+            layer.load(1, {shade: [0.3,'#000']});
             $.post('/admin/category/updateStatus', {id: id, status: status}, function(resp){
                 layer.closeAll()
                 if (resp.code == 0) {

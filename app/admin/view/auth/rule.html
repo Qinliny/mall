@@ -1,0 +1,167 @@
+{extend name="common/childPublic"}
+
+{block name="title"}菜单管理{/block}
+
+{block name="content"}
+<span class="layui-breadcrumb">
+    <a>
+        <cite>权限管理</cite>
+    </a>
+    <a>
+        <cite>菜单管理</cite>
+    </a>
+</span>
+
+<div class="row" style="margin-top: 15px">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            菜单管理列表
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-form layui-row layui-col-space10">
+                <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            菜单名称
+                        </label>
+                        <div class="layui-input-block">
+                            <input type="text" name="role_name" required  lay-verify="required" placeholder="请输入菜单名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-sm4 layui-col-md4 layui-col-lg3">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="search">查询结果</button>
+                            <button type="reset" class="layui-btn layui-btn-primary" id="reset">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-content">
+                <table id="list" lay-filter="list"></table>
+            </div>
+            <script type="text/html" id="test-table-toolbar-toolbarDemo">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="addRole">添加菜单</button>
+                </div>
+            </script>
+        </div>
+    </div>
+</div>
+
+<div id="createBox" style="display: none">
+    <div class="form-box" style="padding: 15px;box-sizing: border-box">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="menu_name" required  lay-verify="required|menuName" placeholder="请输入菜单名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">上级菜单</label>
+                <div class="layui-input-block">
+                    <select name="parent_menu" lay-verify="required|number">
+                        <option value="0">无上级菜单</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="menu_adds" required  lay-verify="required" placeholder="菜单地址" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">菜单图标</label>
+                <div class="layui-input-block">
+                    <input type="text" name="menu_icon" required  lay-verify="required" placeholder="请输入layui内部图标" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">排序</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sort" required  lay-verify="required|number|sort" placeholder="排序" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="createRole">立即提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="js"}
+<script type="text/html" id="barOperation">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    layui.use(['table','jquery', 'form'], function(){
+        var table = layui.table, $ = layui.$, form = layui.form;
+
+        table.on('toolbar(list)', function(obj){
+            if (obj.event == 'addRole') {
+                var elements = $('#createBox').html();
+                layer.open({
+                    type: 1,
+                    title: "添加菜单",
+                    skin: 'layui-layer-demo',
+                    closeBtn: 1,
+                    anim: 2,
+                    area: screen() < 2 ? ['90%', '60%'] : ['550px', '400px'],   // 长，宽
+                    shadeClose: true, //开启遮罩关闭
+                    content: elements
+                });
+            }
+        })
+
+        var listTable = table.render({
+            elem: '#list'
+            ,toolbar: '#test-table-toolbar-toolbarDemo'
+            ,url: '/admin/role'
+            ,page: true
+            ,cols: [[
+                {field: '', title: '序号', type: 'numbers'}
+                ,{field: 'role_name', title: '菜单名称'}
+                ,{field: 'role_name', title: '菜单等级'}
+                ,{field: 'role_name', title: '菜单地址'}
+                ,{field: 'role_name', title: '菜单图标'}
+                ,{field: 'role_name', title: '排序'}
+                ,{field: 'status', title: '状态', templet: function(data){
+                        if (data.status == 0) {
+                            return '<input type="checkbox" name="status" value="'+data.id+'" lay-filter="status" lay-skin="switch" lay-text="开启|关闭" checked>'
+                        } else {
+                            return '<input type="checkbox" name="status" value="'+data.id+'" lay-filter="status" lay-skin="switch" lay-text="开启|关闭">'
+                        }
+                    }
+                }
+                ,{field: 'create_time', title: '添加时间'}
+                ,{field: 'operation', title: '操作', toolbar: "#barOperation"}
+            ]]
+        });
+
+        form.verify({
+            menuName: function(value) {
+                if (value.length > 10) {
+                    return "菜单名称长度最长为10个字符！"
+                }
+            },
+            menuAdds: function(value) {
+                var parentMenu = $('select[name="parent_menu"]').val();
+                if(parentMenu != 0) {
+                }
+            },
+            sort: function(value) {
+                if (value > 100 || value < 0) {
+                    return "菜单的排序值必须在0-100之间！"
+                }
+            }
+        })
+    });
+</script>
+{/block}
