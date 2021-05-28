@@ -19,3 +19,18 @@ CREATE TABLE `qinly_role` (
   `update_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+#菜单表
+CREATE TABLE `qinly_rule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `menu_name` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT '菜单的名称',
+  `parent_menu` int(11) NOT NULL DEFAULT '0' COMMENT '上级菜单',
+  `menu_adds` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '菜单地址',
+  `menu_icon` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT '图标',
+  `sort` int(5) NOT NULL COMMENT '地址',
+  `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
