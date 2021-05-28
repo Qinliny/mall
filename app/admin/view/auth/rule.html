@@ -64,6 +64,9 @@
                 <div class="layui-input-block">
                     <select name="parent_menu" lay-verify="required|number">
                         <option value="0">无上级菜单</option>
+                        {foreach $parentMenu as $key => $val}
+                        <option value="{$val.id}">{$val.menu_name}</option>
+                        {/foreach}
                     </select>
                 </div>
             </div>
@@ -87,7 +90,7 @@
             </div>
             <div class="layui-form-item">
                 <div class="layui-input-block">
-                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="createRole">立即提交</button>
+                    <button class="layui-btn layui-btn-normal" lay-submit lay-filter="createRule">立即提交</button>
                 </div>
             </div>
         </div>
@@ -115,7 +118,10 @@
                     anim: 2,
                     area: screen() < 2 ? ['90%', '60%'] : ['550px', '400px'],   // 长，宽
                     shadeClose: true, //开启遮罩关闭
-                    content: elements
+                    content: elements,
+                    success: function() {
+                        form.render();
+                    }
                 });
             }
         })
@@ -161,6 +167,22 @@
                     return "菜单的排序值必须在0-100之间！"
                 }
             }
+        })
+
+        form.on('submit(createRule)', function(data){
+            layer.load(1, {shade: [0.3,'#000']});
+            $.post('/admin/rule/create', data.field, function(resp){
+                layer.closeAll()
+                if(resp.code == 0) {
+                    listTable.reload('list')
+                    layer.msg(resp.message, {icon: 1})
+                } else {
+                    layer.msg(resp.errors, {icon: 1})
+                }
+            }).error(function(){
+                layer.closeAll()
+                layer.msg("添加权限失败，服务器出现异常！", {icon: 5})
+            });
         })
     });
 </script>

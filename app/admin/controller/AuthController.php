@@ -164,6 +164,38 @@ class AuthController extends BaseController
      * @return \think\response\View
      */
     public function rule() {
-        return view('auth/rule');
+        $parentMenu = AuthDb::getAllParentMenu();
+        if ($parentMenu === false) {
+            abort(__LINE__, "获取一级菜单失败！");
+        }
+        return view('auth/rule', ['parentMenu'=>$parentMenu]);
+    }
+
+    /**
+     * 保存创建菜单的数据
+     */
+    public function createRule() {
+        $param = $this->request->post();
+        try {
+            validate(AuthValidate::class)->scene('createMenu')->check($param);
+            // 如果是一级菜单则设置上级菜单为0，没有则查询这个上级菜单是否存在
+            if ($param['parent_menu'] != 0) {
+                $parentMenuData = AuthDb::findRuleByRuleId($param['parent_menu']);
+                if ($parentMenuData === false) {
+                    throw new Exception("选择的上级菜单不存在！");
+                }
+            }
+            // 保存数据
+            $res = AuthDb::createRule($param);
+            if ($res === false) {
+                throw new Exception("创建菜单失败！");
+            }
+            successAjax("创建菜单成功!");
+        } catch (ValidateException $exception) {
+            // 返回校验的错误信息
+            return failedAjax(__LINE__, $exception->getError());
+        } catch (Exception $exception) {
+            return failedAjax(__LINE__, $exception->getMessage());
+        }
     }
 }

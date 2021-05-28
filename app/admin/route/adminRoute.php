@@ -36,4 +36,5 @@ Route::group('/role', function(){
 // 菜单管理
 Route::group('/rule', function(){
     Route::get('/', 'AuthController/rule');
+    Route::post('/create', 'AuthController/createRule');
 })->middleware(app\admin\middleware\Auth::class);
