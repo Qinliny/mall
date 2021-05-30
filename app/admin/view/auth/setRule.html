@@ -1,0 +1,46 @@
+{extend name="common/childPublic"}
+
+{block name="title"}设置角色权限{/block}
+
+{block name="content"}
+<span class="layui-breadcrumb">
+    <a>
+        <cite>权限管理</cite>
+    </a>
+    <a>
+        <cite>角色管理</cite>
+    </a>
+    <a>
+        <cite>设置角色权限</cite>
+    </a>
+</span>
+
+<div class="row" style="margin-top: 15px">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            设置角色权限
+        </div>
+        <div class="layui-card-body">
+            <div id="tree"></div>
+        </div>
+    </div>
+</div>
+
+{/block}
+
+{block name="js"}
+
+<script>
+    var treeList = '{$treeList|raw}'
+    console.log(eval(treeList))
+    layui.use(['tree', 'jquery'], function(){
+        var tree = layui.tree, $ = layui.$;
+        var inst1 = tree.render({
+            elem: '#tree',
+            data: eval(treeList),
+            onlyIconControl: true,
+            showCheckbox: true
+        });
+    })
+</script>
+{/block}

@@ -31,10 +31,16 @@ Route::group('/role', function(){
     Route::post('/create', 'AuthController/createRole');
     Route::post('/update', 'AuthController/updateRole');
     Route::post('/delete', 'AuthController/deleteRole');
+    Route::get('/setRule', 'AuthController/setRule');
 })->middleware(app\admin\middleware\Auth::class);
 
 // 菜单管理
 Route::group('/rule', function(){
     Route::get('/', 'AuthController/rule');
     Route::post('/create', 'AuthController/createRule');
+    Route::get('/list', 'AuthController/getRuleList');
+    Route::post('/update', 'AuthController/updateRule');
+    Route::post('/updateStatus', 'AuthController/updateRuleStatus');
+    Route::post('/delete', 'AuthController/deleteRule');
 })->middleware(app\admin\middleware\Auth::class);
+

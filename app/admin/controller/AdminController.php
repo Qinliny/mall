@@ -1,6 +1,8 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\model\AuthDb;
+
 /**
  * 管理员管理控制器
  * Class AdminController
@@ -13,6 +15,8 @@ class AdminController extends BaseController
     }
 
     public function createAdmins() {
-        return view('admin/create');
+        // 获取角色列表
+        $roleList = AuthDb::getRoleList(1, 100, ['status'=>0]);
+        return view('admin/create', ['roleList'=>$roleList->items()]);
     }
 }

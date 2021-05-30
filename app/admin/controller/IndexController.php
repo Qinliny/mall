@@ -23,4 +23,6 @@ class IndexController extends BaseController
     public function home() {
         return view('index/home');
     }
+
+
 }

@@ -25,7 +25,7 @@
                             菜单名称
                         </label>
                         <div class="layui-input-block">
-                            <input type="text" name="role_name" required  lay-verify="required" placeholder="请输入菜单名称" autocomplete="off" class="layui-input">
+                            <input type="text" name="rule_name" required  lay-verify="required" placeholder="请输入菜单名称" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                     </div>
                 </div>
             </div>
-            <div class="table-content">
+            <div class="table-content" >
                 <table id="list" lay-filter="list"></table>
             </div>
             <script type="text/html" id="test-table-toolbar-toolbarDemo">
@@ -106,7 +106,7 @@
 <script>
     layui.use(['table','jquery', 'form'], function(){
         var table = layui.table, $ = layui.$, form = layui.form;
-
+        var thisTableWhere;
         table.on('toolbar(list)', function(obj){
             if (obj.event == 'addRole') {
                 var elements = $('#createBox').html();
@@ -125,19 +125,119 @@
                 });
             }
         })
+        
+        table.on('tool(list)', function(obj){
+            switch (obj.event) {
+                case "edit":
+                    var elements = $('#createBox').html();
+                    layer.open({
+                        type: 1,
+                        title: "修改菜单信息",
+                        skin: 'layui-layer-demo',
+                        closeBtn: 1,
+                        anim: 2,
+                        area: screen() < 2 ? ['90%', '60%'] : ['550px', '400px'],   // 长，宽
+                        shadeClose: true, //开启遮罩关闭
+                        content: elements,
+                        success: function() {
+                            var _that = $('.layui-layer-content')
+                            _that.find("input[name='menu_name']").val(obj.data.menu_name)
+                            _that.find("select[name='parent_menu']").val(obj.data.parent_menu)
+                            _that.find("input[name='menu_adds']").val(obj.data.menu_adds)
+                            _that.find("input[name='menu_icon']").val(obj.data.menu_icon)
+                            _that.find("input[name='sort']").val(obj.data.sort)
+                            _that.find(".layui-btn").attr("lay-filter", "edit")
+                            form.render();
 
+                            form.on('submit(edit)', function(data){
+                                layer.load(1, {shade: [0.3,'#000']});
+                                data.field.ruleId = obj.data.id
+                                $.post('/admin/rule/update', data.field, function(resp){
+                                    layer.closeAll()
+                                    if(resp.code == 0) {
+                                        listTable.reload('list')
+                                        layer.msg(resp.message, {icon: 1})
+                                    } else {
+                                        layer.msg(resp.errors, {icon: 1})
+                                    }
+                                }).error(function(){
+                                    layer.closeAll()
+                                    layer.msg("修改权限信息失败，服务器出现异常！", {icon: 5})
+                                });
+                            })
+                        }
+                    });
+                    break;
+                case "checkChild":
+                    listTable.reload({
+                        where: {
+                            childMenu: obj.data.id
+                        },
+                        page: {
+                            curr: 1
+                        },
+                        done: function(){
+                            thisTableWhere = this
+                        }
+                    })
+                    break;
+                case "checkParent":
+                        listTable.reload({
+                            where: {
+                                parentMenu: obj.data.parent_menu
+                            },
+                            page: {
+                                curr: 1
+                            },
+                            done: function(){
+                                thisTableWhere = this
+                            }
+                        })
+                        break;
+                case "del":
+                    var confirm = layer.confirm('确定要删除当前菜单吗？', {
+                        title: "提示信息",
+                        btn: ['确定','取消'],
+                        icon: 5
+                    }, function(){
+                        layer.close(confirm)
+                        layer.load(1, {shade: [0.3,'#000000']});
+                        $.post('/admin/rule/delete', {ruleId: obj.data.id}, function(resp) {
+                            layer.closeAll()
+                            if (resp.code == 0) {
+                                obj.del();
+                                layer.msg(resp.message, {icon: 1})
+                            } else {
+                                layer.msg(resp.errors, {icon: 5})
+                            }
+                        }).error(function(){
+                            layer.closeAll()
+                            layer.msg("删除失败，服务器出现异常！", {icon: 5})
+                        })
+                    }, function(){
+                        layer.close(confirm)
+                    });
+                    break
+            }
+        })
+        
         var listTable = table.render({
             elem: '#list'
             ,toolbar: '#test-table-toolbar-toolbarDemo'
-            ,url: '/admin/role'
+            ,url: '/admin/rule/list'
             ,page: true
             ,cols: [[
                 {field: '', title: '序号', type: 'numbers'}
-                ,{field: 'role_name', title: '菜单名称'}
-                ,{field: 'role_name', title: '菜单等级'}
-                ,{field: 'role_name', title: '菜单地址'}
-                ,{field: 'role_name', title: '菜单图标'}
-                ,{field: 'role_name', title: '排序'}
+                ,{field: 'menu_name', title: '菜单名称'}
+                ,{field: 'menu_adds', title: '菜单地址'}
+                ,{field: 'menu_icon', title: '菜单图标', templet: function(data){
+                        if (data.menu_icon) {
+                            return '<i class="layui-icon '+data.menu_icon+'"></i>'
+                        }
+                        return ""
+                    }
+                }
+                ,{field: 'sort', title: '排序'}
                 ,{field: 'status', title: '状态', templet: function(data){
                         if (data.status == 0) {
                             return '<input type="checkbox" name="status" value="'+data.id+'" lay-filter="status" lay-skin="switch" lay-text="开启|关闭" checked>'
@@ -147,6 +247,14 @@
                     }
                 }
                 ,{field: 'create_time', title: '添加时间'}
+                ,{field: '', title: "关联菜单", templet: function(data) {
+                        if(data.parent_menu == 0) {
+                            return '<a class="layui-btn layui-btn-xs" lay-event="checkChild">查看下级</a>'
+                        } else {
+                            return '<a class="layui-btn layui-btn-xs" lay-event="checkParent">查看上级</a>'
+                        }
+                    }
+                }
                 ,{field: 'operation', title: '操作', toolbar: "#barOperation"}
             ]]
         });
@@ -184,6 +292,46 @@
                 layer.msg("添加权限失败，服务器出现异常！", {icon: 5})
             });
         })
+
+        form.on('switch(status)', function(data){
+            var status = data.elem.checked === false ? 1 : 0
+            var id = data.value
+            layer.load(1, {shade: [0.3,'#000']});
+            $.post('/admin/rule/updateStatus', {ruleId: id, status: status}, function(resp){
+                layer.closeAll()
+                if (resp.code == 0) {
+                    layer.msg(resp.message, {icon: 1})
+                } else {
+                    layer.msg(resp.errors, {icon: 5})
+                }
+            }).error(function(){
+                layer.closeAll()
+                layer.msg("更新状态失败，服务器出现异常！", {icon: 5})
+            })
+        })
+
+        $('#reset').on('click', function(){
+            $('input[name="rule_name"]').val("")
+            if (typeof thisTableWhere != 'undefined') {
+                thisTableWhere.where = {}
+            }
+            listTable.reload('list')
+        })
+
+        form.on('submit(search)', function(data){
+            var rule_name = data.field.rule_name
+            listTable.reload({
+                where: {
+                    ruleName: rule_name
+                },
+                page: {
+                    curr: 1
+                },
+                done: function(){
+                    thisTableWhere = this
+                }
+            })
+        });
     });
 </script>
 {/block}

@@ -174,9 +174,18 @@ class AuthDb extends BaseDb
         }
     }
 
+    /**
+     * 获取菜单列表
+     * @param $page                     分页
+     * @param int $limit                条目数
+     * @param array $condition          条件
+     * @return bool|\think\Paginator    返回数据
+     */
     public static function getMenuList($page, $limit = 10, $condition = []) {
         try {
             $result = self::Db(self::$ruleTable)
+                ->where($condition)
+                ->order('sort','desc')
                 ->paginate(['list_rows'=>$limit, 'page'=>$page])
                 ->each(function($item){
                     if ($item['parent_menu'] == 0) {
@@ -187,6 +196,49 @@ class AuthDb extends BaseDb
                     return $item;
                 });
             return $result;
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * 修改菜单信息
+     * @param $ruleId       菜单ID
+     * @param $data         修改的数据
+     * @return bool         返回修改是否成功
+     */
+    public static function updateMenu($ruleId, $data) {
+        try {
+            $res = self::Db(self::$ruleTable)->where('id', $ruleId)->update($data);
+            return $res > 0;
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * 获取所有的子级菜单
+     * @param $parentId                 父级菜单ID
+     * @return bool|\think\Collection
+     */
+    public static function getChildMenu($parentId) {
+        try {
+            $result = self::Db(self::$ruleTable)->where('parent_menu', $parentId)->select();
+            return $result;
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * 删除菜单
+     * @param $condition    删除条件
+     * @return bool
+     */
+    public static function deleteMenu($condition) {
+        try {
+            $result = self::Db(self::$ruleTable)->where($condition)->delete();
+            return $result > 0;
         } catch (Exception $exception) {
             return false;
         }

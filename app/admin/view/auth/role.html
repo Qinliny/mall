@@ -192,7 +192,7 @@
                                 layer.load(1, {shade: [0.3,'#000']});
                                 $.post('/admin/role/update', {roleName: role_name, roleId: obj.data.id, type: "updateRoleName"}, function(resp){
                                     layer.closeAll()
-                                    if(resp.code == 0) {
+                                    if( resp.code == 0 ) {
                                         listTable.reload('list')
                                         layer.msg(resp.message, {icon: 1})
                                     } else {
@@ -208,6 +208,9 @@
                     break;
                 case 'del':
                     deleteData(obj)
+                    break;
+                case 'setRule':
+                    top.layui.index.openTabsPage("/admin/role/setRule?roleId=" + obj.data.id, '设置权限');
                     break;
             }
         })

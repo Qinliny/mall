@@ -25,67 +25,76 @@
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">管理员姓名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="admins_name" required  lay-verify="required|lengths" placeholder="请输入管理员姓名" autocomplete="off" class="layui-input">
+                        <input type="text" name="admins_name" maxlength=10" required  lay-verify="required|lengths" placeholder="请输入管理员姓名" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">手机号码</label>
                     <div class="layui-input-block">
-                        <input type="text" name="phone" required  lay-verify="required|lengths" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+                        <input type="text" name="phone" maxlength=11" required  lay-verify="required|lengths" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">电子邮箱</label>
                     <div class="layui-input-block">
-                        <input type="text" name="email" required  lay-verify="required|lengths" placeholder="请输入电子邮箱" autocomplete="off" class="layui-input">
+                        <input type="text" name="email" maxlength=50" required  lay-verify="required|lengths" placeholder="请输入电子邮箱" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">微信账号</label>
                     <div class="layui-input-block">
-                        <input type="text" name="wx_number" required  lay-verify="required|lengths" placeholder="请输入微信账号" autocomplete="off" class="layui-input">
+                        <input type="text" name="wx_number" maxlength=20" required  lay-verify="required|lengths" placeholder="请输入微信账号" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">QQ号</label>
                     <div class="layui-input-block">
-                        <input type="text" name="qq_number" required  lay-verify="required|lengths" placeholder="请输QQ号" autocomplete="off" class="layui-input">
+                        <input type="text" name="qq_number" maxlength="12" required  lay-verify="required|lengths" placeholder="请输QQ号" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">籍贯</label>
                     <div class="layui-input-block">
-                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请输入籍贯" autocomplete="off" class="layui-input">
+                        <input type="text" name="native_place" maxlength="50" required  lay-verify="required|lengths" placeholder="请输入籍贯" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">出生年月日</label>
                     <div class="layui-input-block">
-                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请选择出生年月日" autocomplete="off" class="layui-input">
+                        <input type="text" name="birthday" id="birthday" required  lay-verify="required|lengths" placeholder="请选择出生年月日" readonly autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">性别</label>
                     <div class="layui-input-block">
-                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请选择性别" autocomplete="off" class="layui-input">
+                        <select name="sex" lay-verify="required">
+                            <option value="">请选择性别</option>
+                            <option value="1">男</option>
+                            <option value="0">女</option>
+                        </select>
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">登录密码</label>
                     <div class="layui-input-block">
-                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请输入登录密码" autocomplete="off" class="layui-input">
+                        <input type="password" name="password" maxlength="18" required  lay-verify="required|lengths" placeholder="请输入登录密码" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">确认密码</label>
                     <div class="layui-input-block">
-                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请再次确认密码" autocomplete="off" class="layui-input">
+                        <input type="password" name="confirm_password" maxlength="18" required  lay-verify="required|lengths" placeholder="请再次确认密码" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">角色</label>
                     <div class="layui-input-block">
-                        <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请选择角色" autocomplete="off" class="layui-input">
+                        <select name="role" lay-verify="required" lay-search>
+                            <option value="">请选择角色</option>
+                            {foreach $roleList as $key => $val}
+                            <option value="{$val.id}">{$val.role_name}</option>
+                            {/foreach}
+                        </select>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -102,13 +111,19 @@
 
 {block name="js"}
 <script>
-    layui.use(['element','layer','jquery'], function(){
-        var element = layui.element, layer = layui.layer, $ = layui.$, form = layui.form;
+    layui.use(['element','layer','jquery', 'laydate', 'form'], function(){
+        var element = layui.element, layer = layui.layer, $ = layui.$, form = layui.form, laydate = layui.laydate;
+        form.render();
         // 点击面包屑返回商品分类页面
         $('#openView').on('click', function(){
             var targetUrl = $(this).attr('lay-href')
             var targetName = $(this).attr('lay-name')
             top.layui.index.openTabsPage(targetUrl, targetName);
+        });
+
+        laydate.render({
+            elem: '#birthday'
+            ,format: 'yyyy年MM月dd日'
         });
 
         // 验证表单的值

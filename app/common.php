@@ -54,3 +54,24 @@ function returnTables(int $count, $data = []) {
 function thisTime() : string {
     return date('Y-m-d H:i:s', time());
 }
+
+/**
+ * 排序菜单
+ * @param $data
+ * @return mixed
+ */
+function getChildMenu($data) {
+    $array = [];
+    foreach ($data as $key => &$value) {
+        if ($value['parent_menu'] == 0) {
+            foreach ($data as $item) {
+                if ($value['id'] == $item['parent_menu']) {
+                    $value['childMenu'][] = $item;
+                }
+            }
+            $array[] = $value;
+        }
+    }
+
+    return $array;
+}
