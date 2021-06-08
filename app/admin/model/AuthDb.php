@@ -132,8 +132,7 @@ class AuthDb extends BaseDb
      */
     public static function findRuleByRuleId($ruleId) {
         try {
-            $result = self::Db(self::$ruleTable)->where('id', $ruleId)->find();
-            return !empty($result);
+            return self::Db(self::$ruleTable)->where('id', $ruleId)->find();
         } catch (Exception $exception) {
             return false;
         }

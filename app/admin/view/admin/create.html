@@ -25,43 +25,43 @@
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">管理员姓名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="admins_name" maxlength=10" required  lay-verify="required|lengths" placeholder="请输入管理员姓名" autocomplete="off" class="layui-input">
+                        <input type="text" name="admins_name" maxlength=10" required  lay-verify="required" placeholder="请输入管理员姓名" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">手机号码</label>
                     <div class="layui-input-block">
-                        <input type="text" name="phone" maxlength=11" required  lay-verify="required|lengths" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+                        <input type="text" name="phone" maxlength=11" required  lay-verify="required|phone" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">电子邮箱</label>
                     <div class="layui-input-block">
-                        <input type="text" name="email" maxlength=50" required  lay-verify="required|lengths" placeholder="请输入电子邮箱" autocomplete="off" class="layui-input">
+                        <input type="text" name="email" maxlength=50" required  lay-verify="required|email" placeholder="请输入电子邮箱" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">微信账号</label>
                     <div class="layui-input-block">
-                        <input type="text" name="wx_number" maxlength=20" required  lay-verify="required|lengths" placeholder="请输入微信账号" autocomplete="off" class="layui-input">
+                        <input type="text" name="wx_number" maxlength=20"  lay-verify="checkWx" placeholder="请输入微信账号" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">QQ号</label>
                     <div class="layui-input-block">
-                        <input type="text" name="qq_number" maxlength="12" required  lay-verify="required|lengths" placeholder="请输QQ号" autocomplete="off" class="layui-input">
+                        <input type="text" name="qq_number" maxlength="12"  lay-verify="checkQQ" placeholder="请输QQ号" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">籍贯</label>
                     <div class="layui-input-block">
-                        <input type="text" name="native_place" maxlength="50" required  lay-verify="required|lengths" placeholder="请输入籍贯" autocomplete="off" class="layui-input">
+                        <input type="text" name="native_place" maxlength="50" required  lay-verify="required" placeholder="请输入籍贯" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">出生年月日</label>
                     <div class="layui-input-block">
-                        <input type="text" name="birthday" id="birthday" required  lay-verify="required|lengths" placeholder="请选择出生年月日" readonly autocomplete="off" class="layui-input">
+                        <input type="text" name="birthday" id="birthday" required  lay-verify="required" placeholder="请选择出生年月日" readonly autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
@@ -77,13 +77,13 @@
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">登录密码</label>
                     <div class="layui-input-block">
-                        <input type="password" name="password" maxlength="18" required  lay-verify="required|lengths" placeholder="请输入登录密码" autocomplete="off" class="layui-input">
+                        <input type="password" name="password" minlength="8" maxlength="20" required  lay-verify="required|checkPassword" placeholder="请输入登录密码" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
                     <label class="layui-form-label">确认密码</label>
                     <div class="layui-input-block">
-                        <input type="password" name="confirm_password" maxlength="18" required  lay-verify="required|lengths" placeholder="请再次确认密码" autocomplete="off" class="layui-input">
+                        <input type="password" name="confirm_password" minlength="8" maxlength="20" required  lay-verify="required|confirmPassword" placeholder="请再次确认密码" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item layui-col-md7">
@@ -128,14 +128,25 @@
 
         // 验证表单的值
         form.verify({
-            lengths: function(value, item){
-                if (value.length > 6 || value.length < 1) {
-                    return "分类名称长度为1-6"
+            checkWx: function(value) {
+                if (!/^[a-zA-Z][a-zA-Z\d_-]{5,19}$/.test(value)) {
+                    return "请输入正确的微信账号"
                 }
             },
-            sortValue: function(value, item) {
-                if (value > 100 || value < 0) {
-                    return "排序的值必须在0-100内"
+            checkQQ: function(value) {
+                if (!/^[1-9][0-9]{4,10}$/.test(value)) {
+                    return "请输入正确的QQ号"
+                }
+            },
+            checkPassword: function(value) {
+                if (!/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[._~!@#$^&*])[A-Za-z0-9._~!@#$^&*]{8,20}$/.test(value)) {
+                    return "密码由字母、数字、特殊符号(._~!@#$^&*)组成，区分大小写，长度为8-20位"
+                }
+            },
+            confirmPassword: function(value) {
+                var password = $('input[name="password"]').val()
+                if (password != value) {
+                    return "两次输入的密码不一致，请重新输入！"
                 }
             }
         })

@@ -239,7 +239,7 @@ class AuthController extends BaseController
             // 如果是一级菜单则设置上级菜单为0，没有则查询这个上级菜单是否存在
             if ($param['parent_menu'] != 0) {
                 $parentMenuData = AuthDb::findRuleByRuleId($param['parent_menu']);
-                if ($parentMenuData === false) {
+                if ($parentMenuData === false || empty($parentMenuData)) {
                     throw new Exception("选择的上级菜单不存在！");
                 }
             }
@@ -293,7 +293,7 @@ class AuthController extends BaseController
         $ruleId = $this->request->post('ruleId');
         // 查询是否存在该菜单
         $res = AuthDb::findRuleByRuleId($ruleId);
-        if ($res === false) {
+        if ($res === false || empty($res)) {
             abort("菜单不存在！");
         }
         // 判断是否是一级菜单，如果是一级菜单，则需要将所有的菜单都进行删除
