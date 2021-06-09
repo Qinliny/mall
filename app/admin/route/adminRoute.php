@@ -22,6 +22,7 @@ Route::group('/category', function(){
 Route::group('/admins', function(){
     Route::get('/', 'AdminController/admins');
     Route::get('/create', 'AdminController/createAdmins');
+    Route::post('/submit', 'AdminController/saveAdmins');
 })->middleware(app\admin\middleware\Auth::class);
 
 // 角色管理

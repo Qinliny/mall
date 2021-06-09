@@ -36,13 +36,33 @@ class AdminsValidate extends Validate
     ];
 
     protected $message = [
-        'admins_name.require'   =>  '请输入管理员姓名！',
-        'admins_name.max'       =>  '管理员姓名长度不能超过10位！',
-        'phone.require'         =>  '请输入手机号码！',
-        'phone.regex'           =>  '请输入正确的手机号码！',
-        'email.require'         =>  '请输入邮箱！',
-        'email.regex'           =>  '请输入正确的邮箱格式！',
-        'email.max'             =>  '邮箱长度不能超过50位！',
-        'wx_number.require'     =>  ''
+        'admins_name.require'       =>  '请输入管理员姓名！',
+        'admins_name.max'           =>  '管理员姓名长度不能超过10位！',
+        'phone.require'             =>  '请输入手机号码！',
+        'phone.regex'               =>  '请输入正确的手机号码！',
+        'email.require'             =>  '请输入邮箱！',
+        'email.regex'               =>  '请输入正确的邮箱格式！',
+        'email.max'                 =>  '邮箱长度不能超过50位！',
+        'wx_number.regex'           =>  '请输入正确的微信号！',
+        'qq_number.regex'           =>  '请输入正确的QQ号！',
+        'native_place.require'      =>  '请输入籍贯！',
+        'native_place.nax'          =>  '籍贯的长度不能超过50位',
+        'birthday.require'          =>  '请选择出生年月日！',
+        'birthday.date'             =>  '请选择正确的时间格式！',
+        'sex.require'               =>  '请选择性别！',
+        'sex.in'                    =>  '性别参数有误！',
+        'password.require'          =>  '请输入密码！',
+        'password.regex'            =>  '密码由字母、数字、特殊符号(._~!@#$^&*)组成，区分大小写，长度为8-20位！',
+        'confirm_password.require'  =>  '请再次输入密码！',
+        'confirm_password.confirm'  =>  '两次输入的密码不一致，请重新输入！',
+        'role.require'              =>  '请选择角色！',
+        'role.integer'              =>  '选择的角色参数不正确！'
+     ];
+
+    protected $scene = [
+        'create'    =>  [
+            'admins_name', 'phone', 'email', 'wx_number', 'qq_number', 'native_place', 'birthday', 'sex', 'password', 'confirm_password', 'role'
+        ]
     ];
+
 }

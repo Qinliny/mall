@@ -123,7 +123,7 @@
 
         laydate.render({
             elem: '#birthday'
-            ,format: 'yyyy年MM月dd日'
+            ,format: 'yyyy-MM-dd'
         });
 
         // 验证表单的值
@@ -156,12 +156,9 @@
             var index = layer.load(1, {
                 shade: [0.3,'#000']
             });
-            $.post('/admin/category/saveCreateData', data.field, function(resp){
+            $.post('/admin/admins/submit', data.field, function(resp){
                 layer.closeAll()
                 if (resp.code == 0) {
-                    $('input[name="category_name"]').val("")
-                    $('select[name="category_parent"]').val("")
-                    $('input[name="sort"]').val("0")
                     layer.msg(resp.message, {icon: 1});
                 } else {
                     layer.msg(resp.errors, {icon: 5})
