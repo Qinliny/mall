@@ -129,13 +129,17 @@
         // 验证表单的值
         form.verify({
             checkWx: function(value) {
-                if (!/^[a-zA-Z][a-zA-Z\d_-]{5,19}$/.test(value)) {
-                    return "请输入正确的微信账号"
+                if (value.length > 0) {
+                    if (!/^[a-zA-Z][a-zA-Z\d_-]{5,19}$/.test(value)) {
+                        return "请输入正确的微信账号"
+                    }
                 }
             },
             checkQQ: function(value) {
-                if (!/^[1-9][0-9]{4,10}$/.test(value)) {
-                    return "请输入正确的QQ号"
+                if(value.length > 0) {
+                    if (!/^[1-9][0-9]{4,10}$/.test(value)) {
+                        return "请输入正确的QQ号"
+                    }
                 }
             },
             checkPassword: function(value) {
@@ -153,14 +157,14 @@
 
         // 提交表单
         form.on('submit(save)', function(data){
-            var index = layer.load(1, {
-                shade: [0.3,'#000']
-            });
+            var index = layer.load(1, {shade: [0.3,'#000']});
             $.post('/admin/admins/submit', data.field, function(resp){
-                layer.closeAll()
                 if (resp.code == 0) {
-                    layer.msg(resp.message, {icon: 1});
+                    layer.msg(resp.message, {icon: 1, end: function(){
+                            location.reload();
+                    }});
                 } else {
+                    layer.closeAll()
                     layer.msg(resp.errors, {icon: 5})
                 }
             }).error(function(){

@@ -7,6 +7,7 @@ use think\Exception;
 class AdminsDb extends BaseDb
 {
     private static $table = "admins";
+    private static $roleTable = "qinly_role";
 
     /**
      * 保存添加管理信息数据
@@ -31,6 +32,31 @@ class AdminsDb extends BaseDb
                 'update_time'   =>  thisTime()
             ]);
             return $result > 0;
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+
+    /**
+     * 获取管理员列表信息
+     * @param int $page
+     * @param int $limit
+     * @param array $confition
+     * @return false
+     */
+    public static function getAdminsList($page = 1, $limit = 10, $confition = []) {
+        try {
+            $result = self::Db(self::$table)->alias('a')
+                ->join(self::$roleTable.' b', 'a.role_id = b.id')
+                ->where($confition)
+                ->field('a.admins_name, a.phone, a.email, a.wx_number, a.qq_number, a.native_place, a.birthday, a.sex, a.role_id, a.status, a.create_time, a.last_login_time, b.role_name')
+                ->order('a.create_time', 'desc')
+                ->paginate(['list_rows'=>$limit, 'page'=>$page])
+                ->each(function($item, $key) {
+                    $item['sex'] = $item['sex'] == 1 ? "男" : "女";
+                    return $item;
+                });
+            return $result;
         } catch (Exception $exception) {
             return false;
         }

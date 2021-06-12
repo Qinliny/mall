@@ -23,6 +23,7 @@ Route::group('/admins', function(){
     Route::get('/', 'AdminController/admins');
     Route::get('/create', 'AdminController/createAdmins');
     Route::post('/submit', 'AdminController/saveAdmins');
+    Route::rule('/list', 'AdminController/getAdminsList');
 })->middleware(app\admin\middleware\Auth::class);
 
 // 角色管理

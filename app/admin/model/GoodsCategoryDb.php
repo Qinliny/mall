@@ -90,7 +90,6 @@ class GoodsCategoryDb extends BaseDb
             $res = self::Db(self::$table)->insert($insertData);
             return $res > 0;
         } catch (Exception $exception) {
-            dd($exception);
             return false;
         }
     }
@@ -118,8 +117,7 @@ class GoodsCategoryDb extends BaseDb
      */
     public static function updateGoodsCategoryData(array $condition, array $data) {
         try {
-            $res = self::Db(self::$table)->where($condition)->update($data);
-            return $res;
+            return self::Db(self::$table)->where($condition)->update($data);
         } catch (Exception $exception) {
             return false;
         }
@@ -132,8 +130,7 @@ class GoodsCategoryDb extends BaseDb
      */
     public static function deleteGoodsCategory(array $condition) {
         try {
-            $res = self::Db(self::$table)->where($condition)->delete();
-            return $res;
+            return self::Db(self::$table)->where($condition)->delete();
         } catch (Exception $exception) {
             return false;
         }

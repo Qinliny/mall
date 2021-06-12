@@ -10,7 +10,7 @@ class AdminsValidate extends Validate
 {
     protected $regex = [
         // 验证手机号码
-        'checkPhone'        =>  '/^1[3|4|5|7|8][0-9]\d{4,8}$/',
+        'checkPhone'        =>  '/^1[3|4|5|7|8|9][0-9]\d{4,8}$/',
         // 验证邮箱
         'checkEmail'        =>  '/^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/',
         // 验证微信号码

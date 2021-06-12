@@ -19,7 +19,11 @@ class AdminController extends BaseController
      * @return \think\response\View
      */
     public function admins() {
-        return view('admin/admins');
+        $roleList = AuthDb::getRoleList(1, 1000, []);
+        if ($roleList === false) {
+            abort(500, "获取角色信息数据失败！");
+        }
+        return view('admin/admins', ['role'=>$roleList->items()]);
     }
 
     /**
@@ -53,4 +57,37 @@ class AdminController extends BaseController
             failedAjax($exception->getCode(), $exception->getMessage());
         }
     }
+
+    /**
+     * 获取管理员信息列表
+     */
+    public function getAdminsList() {
+        $param = $this->request->param();
+        $page = isset($param['page']) && $param['page'] > 0 ? $param['page'] : 1;
+        $limit = isset($param['limit']) ? $param['limit'] : 10;
+        // 添加查询条件
+        $where = [];
+        // 手机号码
+        if (isset($param['param']['phone']) && !empty($param['param']['phone'])) {
+            $where[] = ['a.phone', '=', $param['param']['phone']];
+        }
+        // 电子邮箱
+        if (isset($param['param']['email']) && !empty($param['param']['email'])) {
+            $where[] = ['a.email', '=', $param['param']['email']];
+        }
+        // 管理员名称
+        if (isset($param['param']['name']) && !empty($param['param']['name'])) {
+            $where[] = ['a.admins_name', '=', $param['param']['name']];
+        }
+        // 角色
+        if (isset($param['param']['role']) && !empty($param['param']['role'])) {
+            $where[] = ['a.role_id', '=', $param['param']['role']];
+        }
+        $result = AdminsDb::getAdminsList($page, $limit, $where);
+        if ($result === false) {
+            return failedAjax(__LINE__, "获取管理员列表信息失败！");
+        }
+        returnTables($result->total(), $result->items());
+    }
+
 }
