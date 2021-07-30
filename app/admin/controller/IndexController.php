@@ -1,6 +1,9 @@
 <?php
 namespace app\admin\controller;
 
+use app\admin\model\AdminsDb;
+use think\facade\Log;
+
 /**
  * 主应用控制器
  * Class IndexController

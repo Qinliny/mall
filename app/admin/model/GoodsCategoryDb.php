@@ -97,11 +97,13 @@ class GoodsCategoryDb extends BaseDb
     /**
      * 根据分类名称获取分类信息
      * @param string $categoryName  分类名称
-     * @return array|bool|\think\Model|null
+     * @param array $condition      额外的条件
+     * @return array|false|\think\Model|null
      */
-    public static function getGoodsCategoryDataByName(string $categoryName) {
+    public static function getGoodsCategoryDataByName(string $categoryName, $condition = []) {
         try {
             return self::Db(self::$table)
+                    ->where($condition)
                     ->where('category_name', $categoryName)
                     ->find();
         } catch (Exception $exception) {

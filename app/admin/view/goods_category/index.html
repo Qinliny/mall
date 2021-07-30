@@ -47,6 +47,42 @@
         </div>
     </div>
 </div>
+
+<div id="editGoodsCategoryBox" style="display: none">
+    <div class="layui-card-header">修改分类信息</div>
+    <div class="layui-card-body layui-form" lay-filter="goodsCategorInfo">
+        <div class="layui-form-item">
+            <label class="layui-form-label">分类名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="category_name" required  lay-verify="required|lengths" placeholder="请输入分类名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上级分类</label>
+            <div class="layui-input-block">
+                <select name="category_parent">
+                    <option value="0">无上级分类</option>
+                    {foreach $list as $key => $value}
+                    <option value="{$value.id}">{$value.category_name}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="text" name="sort" required value="0" lay-verify="required|number|sortValue" placeholder="请输入0-100的排序值" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="saveEditGoodsCategoryData">立即提交</button>
+                <button class="layui-btn layui-btn-primary cancel">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {/block}
 
 {block name="js"}
@@ -69,12 +105,8 @@
                 case 'check':
                     if (obj.data.parent_id == 0) {
                         listTable.reload({
-                            where: {
-                                parent_id: obj.data.id
-                            },
-                            page: {
-                                curr: 1
-                            },
+                            where: {parent_id: obj.data.id},
+                            page: {curr: 1},
                             done: function(){
                                 thinsTableWhere = this
                             }
@@ -83,6 +115,58 @@
                     break;
                 case 'del':
                     deleteData(obj)
+                    break;
+                case 'edit':
+                    var elements = $('#editGoodsCategoryBox').html()
+                    top.layui.admin.popupRight({
+                        id: 'LAY_editGoodsCategoryBox'
+                        ,area: '350px'
+                        ,content: elements
+                        ,success: function(){
+                            top.layui.form.val("goodsCategorInfo", {
+                                "category_name": obj.data.category_name,
+                                "category_parent": obj.data.parent_id,
+                                "sort": obj.data.sort
+                            })
+
+                            top.layui.$('.cancel').on('click', function() {
+                                top.layui.layer.close(top.layui.admin.popup.index);
+                            })
+
+                            top.layui.form.render();
+
+                            top.layui.form.verify({
+                                lengths: function(value, item){
+                                    if (value.length > 6 || value.length < 1) {
+                                        return "分类名称长度为1-6"
+                                    }
+                                },
+                                sortValue: function(value, item) {
+                                    if (value > 100 || value < 0) {
+                                        return "排序的值必须在0-100内"
+                                    }
+                                }
+                            })
+
+                            top.layui.form.on('submit(saveEditGoodsCategoryData)', function(data) {
+                                data.field.id = obj.data.id
+                                layer.load(1, {shade: [0.3,'#000000']});
+                                top.layui.$.post('/admin/category/update', data.field, function(resp) {
+                                    layer.closeAll()
+                                    if (resp.code == 0) {
+                                        top.layui.layer.msg(resp.message, {icon: 1})
+                                        obj.update(data.field)
+                                    } else {
+                                        top.layui.layer.msg(resp.errors, {icon: 5})
+                                    }
+                                }).error(function(){
+                                    layer.closeAll()
+                                    layer.msg("编辑失败，服务器出现异常！", {icon: 5})
+                                })
+                            })
+                        }
+                    })
+                    form.render('select')
                     break;
             }
         })
@@ -184,7 +268,6 @@
                 form.render()
             })
         })
-
     });
 </script>
 {/block}

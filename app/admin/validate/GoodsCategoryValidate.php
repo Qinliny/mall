@@ -11,6 +11,7 @@ use think\Validate;
 class GoodsCategoryValidate extends Validate
 {
     protected $rule = [
+        'id'                =>  'require|integer',
         'category_name'     =>  'require|length:1,6',
         'category_parent'   =>  'require|integer',
         'sort'              =>  'require|between:0,100'
@@ -23,5 +24,10 @@ class GoodsCategoryValidate extends Validate
         'category_parent.integer'   =>  '请选择正确的商品分类',
         'sort.require'              =>  '请输入商品分类的排序',
         'sort.between'              =>  '商品分类的排序值只能在0-100之间'
+    ];
+
+    protected $scene = [
+        'create'    =>  ['category_name', 'category_parent', 'sort'],
+        'edit'      =>  ['id', 'category_name', 'category_parent', 'sort']
     ];
 }

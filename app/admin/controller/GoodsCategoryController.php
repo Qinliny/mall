@@ -18,7 +18,9 @@ class GoodsCategoryController extends BaseController
      * @return \think\response\View
      */
     public function category() {
-        return view('goods_category/index');
+        // 获取分类数据
+        $result = GoodsCategoryDb::getFirstGoodsCategoryList();
+        return view('goods_category/index', ['list'=>$result]);
     }
 
     /**
@@ -28,9 +30,6 @@ class GoodsCategoryController extends BaseController
     public function createCategory() {
         // 获取分类数据
         $result = GoodsCategoryDb::getFirstGoodsCategoryList();
-        if ($result === false) {
-            abort(__LINE__, '获取分类数据失败！');
-        }
         return view('goods_category/create', ['list'=>$result]);
     }
 
@@ -39,28 +38,15 @@ class GoodsCategoryController extends BaseController
      */
     public function saveCreateData() {
         $param = $this->request->post();
-        try {
-            // 验证数据
-            validate(GoodsCategoryValidate::class)->check($param);
-            // 判断是否已存在
-            $categoryInfo = GoodsCategoryDb::getGoodsCategoryDataByName($param['category_name']);
+        // 验证数据
+        validate(GoodsCategoryValidate::class)->scene('create')->check($param);
+        // 判断是否已存在
+        $categoryInfo = GoodsCategoryDb::getGoodsCategoryDataByName($param['category_name']);
+        if (!empty($categoryInfo)) failedAjax(__LINE__, "分类信息已存在");
 
-            if ($categoryInfo === false) throw new Exception("获取分类信息失败！", __LINE__);
-
-            if (!empty($categoryInfo)) throw new Exception("分类信息已存在！", __LINE__);
-
-            // 保存分类数据
-            $res = GoodsCategoryDb::createData($param);
-            if ($res) {
-                successAjax("商品分类信息创建成功！");
-            }
-            throw new Exception("商品分类信息创建失败！", __LINE__);
-        } catch (ValidateException $exception) {
-            // 返回错误的验证信息
-            failedAjax(__LINE__, $exception->getError());
-        } catch (Exception $exception) {
-            failedAjax($exception->getCode(), $exception->getMessage());
-        }
+        // 保存分类数据
+        GoodsCategoryDb::createData($param);
+        successAjax("商品分类信息创建成功！");
     }
 
     /**
@@ -83,9 +69,6 @@ class GoodsCategoryController extends BaseController
         }
 
         $result = GoodsCategoryDb::getGoodsCategoryList($page, $limit, $condition);
-        if($result === false) {
-            abort(__LINE__, '获取分类列表数据失败！');
-        }
         returnTables($result->total(), $result->items());
     }
 
@@ -103,7 +86,6 @@ class GoodsCategoryController extends BaseController
         if (empty($id)) failedAjax(__LINE__, "参数异常");
         // 判断当前数据是否存在
         $info = GoodsCategoryDb::getGoodsCategoryDataById($id);
-        if ($info === false) failedAjax(__LINE__, "获取分类数据异常！");
         if (empty($info)) failedAjax(__LINE__, "分类信息不存在！");
 
         // 判断是否是一级状态，如果是一级状态则修改一级分类的状态以及下面所有的二级的状态，反之只修改当前状态
@@ -133,10 +115,7 @@ class GoodsCategoryController extends BaseController
                 ];
             }
         }
-        $res = GoodsCategoryDb::updateGoodsCategoryData($condition, ['status'=>$status,'update_time'=>thisTime()]);
-        if ($res === false) {
-            failedAjax(__LINE__, "状态更新失败！");
-        }
+        GoodsCategoryDb::updateGoodsCategoryData($condition, ['status'=>$status,'update_time'=>thisTime()]);
         successAjax("状态更新成功！");
     }
 
@@ -150,7 +129,6 @@ class GoodsCategoryController extends BaseController
 
         // 判断当前数据是否存在
         $info = GoodsCategoryDb::getGoodsCategoryDataById($id);
-        if ($info === false) failedAjax(__LINE__, "获取分类数据异常！");
         if (empty($info)) failedAjax(__LINE__, "分类信息不存在！");
 
         if ($info['parent_id'] == 0) {
@@ -168,10 +146,25 @@ class GoodsCategoryController extends BaseController
             ];
         }
 
-        $result = GoodsCategoryDb::deleteGoodsCategory($condition);
-        if ($result === false) {
-            failedAjax(__LINE__, "删除失败！");
-        }
+        GoodsCategoryDb::deleteGoodsCategory($condition);
         successAjax("删除成功！");
+    }
+
+    // 修改分类信息
+    public function updateGoodsCategoryInfo() {
+        $param = request()->post();
+        // 验证数据
+        validate(GoodsCategoryValidate::class)->scene('edit')->check($param);
+        // 判断是否已存在
+        $categoryInfo = GoodsCategoryDb::getGoodsCategoryDataByName($param['category_name'],
+            [['id', '<>', $param['id']]]);
+        if (!empty($categoryInfo)) failedAjax( __LINE__, "分类信息已存在");
+        // 修改分类数据
+        GoodsCategoryDb::updateGoodsCategoryData([['id', '=', $param['id']]], [
+            'category_name' =>  $param['category_name'],
+            'parent_id'     =>  $param['category_parent'],
+            'sort'          =>  $param['sort']
+        ]);
+        successAjax("分类信息修改成功！");
     }
 }

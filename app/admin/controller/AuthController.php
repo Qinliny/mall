@@ -35,32 +35,20 @@ class AuthController extends BaseController
             ];
         }
         $result = AuthDb::getRoleList($page, $limit, $condition);
-        if($result === false) abort(__LINE__, "查询角色列表失败");
         returnTables($result->total(), $result->items());
     }
 
-    /**
-     * 创建角色
-     * @param   $roleName   string
-     */
+    // 创建角色
     public function createRole() {
         $param = $this->request->post();
-        try {
-            // 验证数据
-            validate(AuthValidate::class)->scene('createRole')->check($param);
-            // 判断角色是否存在
-            $result = AuthDb::findRoleByRoleName($param['roleName']);
-            if ($result === false) throw new Exception("查询角色数据出现异常");
-            if (!empty($result)) failedAjax(__LINE__, "角色名称已存在!");
-            // 保存数据
-            $res = AuthDb::creaeRole($param['roleName']);
-            if ($res === false) throw new Exception("创建角色失败！");
-            successAjax("创建角色成功！");
-        } catch (ValidateException $exception) {
-            failedAjax(__LINE__, $exception->getError());
-        } catch (Exception $exception) {
-            abort(__LINE__, $exception->getMessage());
-        }
+        // 验证数据
+        validate(AuthValidate::class)->scene('createRole')->check($param);
+        // 判断角色是否存在
+        $result = AuthDb::findRoleByRoleName($param['roleName']);
+        if (!empty($result)) \exception("角色名称已存在", __LINE__);
+        // 保存数据
+        AuthDb::creaeRole($param['roleName']);
+        successAjax("创建角色成功！");
     }
 
     /**
@@ -78,7 +66,7 @@ class AuthController extends BaseController
                 $this->updateRoleData($param);
                 break;
             default:
-                failedAjax(__LINE__, "请求参数异常！");
+                \exception("请求参数异常", __LINE__);
                 break;
         }
     }
@@ -91,14 +79,10 @@ class AuthController extends BaseController
         $status = isset($param['status']) && in_array($param['status'], [1, 0]) ? $param['status'] : null;
         $roleId = (int)$param['roleId'];
         $result = AuthDb::findRoleByRoleId($roleId);
-        if ($result === false) abort("查询数据出现异常！");
-        if (empty($result)) failedAjax(__LINE__,"当前角色不存在！");
+        if (empty($result)) failedAjax("当前角色不存在", __LINE__);
         if (is_null($status)) failedAjax(__LINE__, "状态参数异常");
         // 修改数据
-        $res = AuthDb::updateRoleStatus($roleId, (int)$status);
-        if ($res === false) {
-            failedAjax(__LINE__, "状态修改失败！");
-        }
+        AuthDb::updateRoleStatus($roleId, (int)$status);
         successAjax("状态修改成功！");
     }
 
@@ -107,39 +91,24 @@ class AuthController extends BaseController
      * @param $param
      */
     public function updateRoleData($param) {
-        try {
-            // 验证数据
-            validate(AuthValidate::class)->scene('createRole')->check($param);
-            $roleId = (int)$param['roleId'];
-            // 查询角色信息
-            $roleInfo = AuthDb::findRoleByRoleId($roleId);
-            if ($roleInfo === false) {
-                throw new Exception("查询角色数据出现异常");
-            }
-            if (empty($roleInfo)) {
-                throw new Exception("当前角色不存在");
-            }
-
-            // 判断角色是否存在
-            $result = AuthDb::findRoleByRoleName($param['roleName']);
-            if ($result === false) {
-                throw new Exception("查询角色数据出现异常");
-            }
-            if (!empty($result)) {
-                failedAjax(__LINE__, "角色名称已存在!");
-            }
-
-            // 保存数据
-            $res = AuthDb::updateRoleData($roleId, $param['roleName']);
-            if ($res === false) {
-                throw new Exception("角色信息修改失败！");
-            }
-            successAjax("角色信息修改成功！");
-        } catch (ValidateException $exception) {
-            failedAjax(__LINE__, $exception->getError());
-        } catch (Exception $exception) {
-            abort(__LINE__, $exception->getMessage());
+        // 验证数据
+        validate(AuthValidate::class)->scene('createRole')->check($param);
+        $roleId = (int)$param['roleId'];
+        // 查询角色信息
+        $roleInfo = AuthDb::findRoleByRoleId($roleId);
+        if (empty($roleInfo)) {
+            failedAjax(__LINE__, 当前角色不存在);
         }
+
+        // 判断角色是否存在
+        $result = AuthDb::findRoleByRoleName($param['roleName']);
+        if (!empty($result)) {
+            failedAjax(__LINE__, "角色名称已存在!");
+        }
+
+        // 保存数据
+        $res = AuthDb::updateRoleData($roleId, $param['roleName']);
+        successAjax("角色信息修改成功！");
     }
 
     /**
@@ -149,13 +118,9 @@ class AuthController extends BaseController
     public function deleteRole() {
         $roleId = $this->request->post('roleId');
         $result = AuthDb::findRoleByRoleId((int)$roleId);
-        if ($result === false) abort("查询数据出现异常！");
         if (empty($result)) failedAjax(__LINE__,"当前角色不存在！");
         // 进行删除
-        $res = AuthDb::deleteRoleById($roleId);
-        if ($res === false) {
-            failedAjax(__LINE__, "角色删除失败！");
-        }
+        AuthDb::deleteRoleById($roleId);
         successAjax("角色删除成功！");
     }
 
@@ -166,7 +131,7 @@ class AuthController extends BaseController
     public function rule() {
         $parentMenu = AuthDb::getAllParentMenu();
         if ($parentMenu === false) {
-            abort(__LINE__, "获取一级菜单失败！");
+            \exception("获取一级菜单失败", __LINE__);
         }
         return view('auth/rule', ['parentMenu'=>$parentMenu]);
     }
@@ -176,27 +141,17 @@ class AuthController extends BaseController
      */
     public function createRule() {
         $param = $this->request->post();
-        try {
-            validate(AuthValidate::class)->scene('createMenu')->check($param);
-            // 如果是一级菜单则设置上级菜单为0，没有则查询这个上级菜单是否存在
-            if ($param['parent_menu'] != 0) {
-                $parentMenuData = AuthDb::findRuleByRuleId($param['parent_menu']);
-                if ($parentMenuData === false) {
-                    throw new Exception("选择的上级菜单不存在！");
-                }
+        validate(AuthValidate::class)->scene('createMenu')->check($param);
+        // 如果是一级菜单则设置上级菜单为0，没有则查询这个上级菜单是否存在
+        if ($param['parent_menu'] != 0) {
+            $parentMenuData = AuthDb::findRuleByRuleId($param['parent_menu']);
+            if ($parentMenuData === false) {
+                failedAjax(__LINE__, "选择的上级菜单不存在");
             }
-            // 保存数据
-            $res = AuthDb::createRule($param);
-            if ($res === false) {
-                throw new Exception("创建菜单失败！");
-            }
-            successAjax("创建菜单成功!");
-        } catch (ValidateException $exception) {
-            // 返回校验的错误信息
-            return failedAjax(__LINE__, $exception->getError());
-        } catch (Exception $exception) {
-            return failedAjax(__LINE__, $exception->getMessage());
         }
+        // 保存数据
+        AuthDb::createRule($param);
+        successAjax("创建菜单成功!");
     }
 
     /**
@@ -220,7 +175,6 @@ class AuthController extends BaseController
             $condition[] = ['parent_menu', '=', 0];
         }
         $result = AuthDb::getMenuList($page, $limit, $condition);
-        if($result === false) abort(__LINE__, "查询角色列表失败");
         returnTables($result->total(), $result->items());
     }
 
@@ -229,40 +183,30 @@ class AuthController extends BaseController
      */
     public function updateRule() {
         $param = $this->request->post();
-        try {
-            validate(AuthValidate::class)->scene('createMenu')->check($param);
-            // 判断当前修改的菜单是否存在
-            $result = AuthDb::findRuleByRuleId($param['ruleId']);
-            if ($result === false || empty($result)) {
-                throw new Exception("修改失败，当前菜单不存在！");
-            }
-            // 如果是一级菜单则设置上级菜单为0，没有则查询这个上级菜单是否存在
-            if ($param['parent_menu'] != 0) {
-                $parentMenuData = AuthDb::findRuleByRuleId($param['parent_menu']);
-                if ($parentMenuData === false || empty($parentMenuData)) {
-                    throw new Exception("选择的上级菜单不存在！");
-                }
-            }
-            $updateData = [
-                'menu_name'     =>  $param['menu_name'],
-                'parent_menu'   =>  $param['parent_menu'],
-                'menu_adds'     =>  $param['menu_adds'],
-                'menu_icon'     =>  $param['menu_icon'],
-                'sort'          =>  $param['sort'],
-                'update_time'   =>  thisTime()
-            ];
-            // 修改数据
-            $res = AuthDb::updateMenu($param['ruleId'], $updateData);
-            if ($res === false) {
-                throw new Exception("修改菜单数据失败！");
-            }
-            successAjax("修改菜单数据成功！");
-        } catch (ValidateException $exception) {
-            // 返回校验的错误信息
-            return failedAjax(__LINE__, $exception->getError());
-        } catch (Exception $exception) {
-            return failedAjax(__LINE__, $exception->getMessage());
+        validate(AuthValidate::class)->scene('createMenu')->check($param);
+        // 判断当前修改的菜单是否存在
+        $result = AuthDb::findRuleByRuleId($param['ruleId']);
+        if ($result === false || empty($result)) {
+            failedAjax(__LINE__, "修改失败，当前菜单不存在");
         }
+        // 如果是一级菜单则设置上级菜单为0，没有则查询这个上级菜单是否存在
+        if ($param['parent_menu'] != 0) {
+            $parentMenuData = AuthDb::findRuleByRuleId($param['parent_menu']);
+            if ($parentMenuData === false || empty($parentMenuData)) {
+                failedAjax(__LINE__, "选择的上级菜单不存在");
+            }
+        }
+        $updateData = [
+            'menu_name'     =>  $param['menu_name'],
+            'parent_menu'   =>  $param['parent_menu'],
+            'menu_adds'     =>  $param['menu_adds'],
+            'menu_icon'     =>  $param['menu_icon'],
+            'sort'          =>  $param['sort'],
+            'update_time'   =>  thisTime()
+        ];
+        // 修改数据
+        AuthDb::updateMenu($param['ruleId'], $updateData);
+        successAjax("修改菜单数据成功！");
     }
 
     /**
@@ -273,16 +217,10 @@ class AuthController extends BaseController
         $ruleStatus = isset($param['status']) && in_array($param['status'], [1, 0]) ? $param['status'] : null;
         $ruleId = (int)$param['ruleId'];
         $res = AuthDb::findRuleByRuleId($ruleId);
-        if ($res === false) {
-            abort("查询数据出现异常！");
-        }
         if (empty($res)) failedAjax(__LINE__,"当前菜单不存在！");
         if (is_null($ruleStatus)) failedAjax(__LINE__, "状态参数异常");
         // 修改数据
         $res = AuthDb::updateMenu($ruleId, ['status'=>$ruleStatus]);
-        if ($res === false) {
-            failedAjax(__LINE__, "状态修改失败！");
-        }
         successAjax("状态修改成功！");
     }
 
@@ -294,7 +232,7 @@ class AuthController extends BaseController
         // 查询是否存在该菜单
         $res = AuthDb::findRuleByRuleId($ruleId);
         if ($res === false || empty($res)) {
-            abort("菜单不存在！");
+            failedAjax(__LINE__, "菜单不存在");
         }
         // 判断是否是一级菜单，如果是一级菜单，则需要将所有的菜单都进行删除
         $condition = [];
@@ -310,9 +248,6 @@ class AuthController extends BaseController
             ];
         }
         $result = AuthDb::deleteMenu($condition);
-        if($result === false) {
-            ailedAjax(__LINE__, "菜单删除失败！");
-        }
         successAjax("菜单删除成功！");
     }
 
@@ -320,9 +255,7 @@ class AuthController extends BaseController
         $roleId = $this->request->get('roleId');
         // 判断角色是否存在
         $result = AuthDb::findRoleByRoleId((int)$roleId);
-        if ($result === false) {
-            abort(__LINE__, "角色信息不存在！");
-        }
+        if (empty($result)) \exception("角色不存在",__LINE__);
         // 获取菜单数据
         $menuList = AuthDb::getMenuList(1, 100);
         $menu = getChildMenu($menuList->items());

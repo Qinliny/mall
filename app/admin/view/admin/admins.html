@@ -76,11 +76,65 @@
         <table id="list" lay-filter="list"></table>
     </div>
 </div>
+
+<die class="details-box" style="display: none">
+    <div class="layui-card-header">管理员详细信息</div>
+    <div class="layui-card-body layui-form" lay-filter="adminDetailsForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">管理员姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone" readonly autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电子邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="email" readonly autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">微信账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="wx_number" readonly autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">QQ号</label>
+            <div class="layui-input-block">
+                <input type="text" name="qq_number" readonly autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">籍贯</label>
+            <div class="layui-input-block">
+                <input type="text" name="native_place" readonly autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出生年月日</label>
+            <div class="layui-input-block">
+                <input type="text" name="native_place" readonly autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="text" name="sex" readonly autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+</die>
 {/block}
 
 {block name="js"}
 <script type="text/html" id="barOperation">
-    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="setRule">修改密码</a>
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="detail">详细信息</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
@@ -133,6 +187,22 @@
                 thisTableWhere.where = {}
             }
             listTable.reload('list')
+        })
+
+        table.on('tool(list)', function (obj) {
+            switch (obj.event) {
+                case "detail":
+                    var elements = $('.details-box').html()
+                    top.layui.admin.popupRight({
+                        id: 'LAY_adminPopupAdminDetails'
+                        ,area: '350px'
+                        ,content: elements
+                        ,success: function(){
+                            console.log($('.layui-layer-adminRight'))
+                        }
+                    })
+                    break;
+            }
         })
     });
 </script>

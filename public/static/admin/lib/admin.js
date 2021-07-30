@@ -178,7 +178,7 @@ layui.define('view', function(exports){
         ,title: false
         ,closeBtn: false
         ,offset: 'r'
-        ,shade: 0.1
+        ,shade: 0.2
         ,shadeClose: true
         ,skin: 'layui-anim layui-anim-rl layui-layer-adminRight'
         ,area: '300px'

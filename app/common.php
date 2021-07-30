@@ -72,6 +72,9 @@ function getChildMenu($data) {
             $array[] = $value;
         }
     }
-
     return $array;
+}
+
+function exception($messages, $code) {
+    throw new \think\Exception($messages, $code);
 }

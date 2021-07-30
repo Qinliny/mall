@@ -16,6 +16,7 @@ Route::group('/category', function(){
     Route::get('/getList', "GoodsCategoryController/getGoodsCategoryList");
     Route::post('/updateStatus', 'GoodsCategoryController/updateGoodsCategoryStatus');
     Route::post('/delete', 'GoodsCategoryController/deleteGoodsCategory');
+    Route::post('/update', 'GoodsCategoryController/updateGoodsCategoryInfo');
 })->middleware(app\admin\middleware\Auth::class);
 
 // 管理员列表

@@ -9,7 +9,10 @@ return [
     // 日志记录级别
     'level'        => [],
     // 日志类型记录的通道 ['error'=>'email',...]
-    'type_channel' => [],
+    'type_channel' => [
+        'error' =>  'error',
+        'info'  =>  'info'
+    ],
     // 关闭全局日志写入
     'close'        => false,
     // 全局日志处理 支持闭包
@@ -40,6 +43,14 @@ return [
             'realtime_write' => false,
         ],
         // 其它日志通道配置
+        'error' =>  [
+            'type'  =>  'File',
+            'path'  =>  root_path() . '/runtime/errorLog'
+        ],
+        'info' =>  [
+            'type'  =>  'File',
+            'path'  =>  root_path() . '/runtime/infoLog'
+        ]
     ],
 
 ];

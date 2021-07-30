@@ -19,16 +19,12 @@ class AuthDb extends BaseDb
      * @return bool
      */
     public static function creaeRole(string $roleName) {
-        try {
-            $result = self::Db(self::$roleTable)->insert([
-                'role_name' =>  $roleName,
-                'create_time'   =>  thisTime(),
-                'update_time'   =>  thisTime()
-            ]);
-            return $result > 0;
-        } catch (Exception $exception) {
-            return false;
-        }
+        $result = self::Db(self::$roleTable)->insert([
+            'role_name' =>  $roleName,
+            'create_time'   =>  thisTime(),
+            'update_time'   =>  thisTime()
+        ]);
+        return $result > 0;
     }
 
     /**
@@ -37,14 +33,10 @@ class AuthDb extends BaseDb
      * @return array|bool|\think\Model  返回角色数据
      */
     public static function findRoleByRoleName(string $roleName) {
-        try {
-            $result = self::Db(self::$roleTable)
-                ->where('role_name', $roleName)
-                ->find();
-            return empty($result) ? [] : $result;
-        } catch (Exception $exception) {
-            return false;
-        }
+        $result = self::Db(self::$roleTable)
+            ->where('role_name', $roleName)
+            ->find();
+        return empty($result) ? [] : $result;
     }
 
     /**
@@ -55,13 +47,9 @@ class AuthDb extends BaseDb
      * @return \think\Paginator
      */
     public static function getRoleList(int $page = 1, int $limit = 10, array $condition) {
-        try {
-            $result = self::Db(self::$roleTable)->where($condition)
-                        ->paginate(['list_rows'=>$limit, 'page'=>$page]);
-            return $result;
-        } catch (Exception $exception) {
-            return false;
-        }
+        $result = self::Db(self::$roleTable)->where($condition)
+            ->paginate(['list_rows'=>$limit, 'page'=>$page]);
+        return $result;
     }
 
     /**
@@ -70,11 +58,7 @@ class AuthDb extends BaseDb
      * @return array|false|\think\Model|null
      */
     public static function findRoleByRoleId(int $roleId) {
-        try {
-            return self::Db(self::$roleTable)->where('id', $roleId)->find();
-        } catch (Exception $exception) {
-            return false;
-        }
+        return self::Db(self::$roleTable)->where('id', $roleId)->find();
     }
 
     /**
@@ -84,14 +68,10 @@ class AuthDb extends BaseDb
      * @return false
      */
     public static function updateRoleStatus(int $roleId, int $status) {
-        try {
-            self::Db(self::$roleTable)->where('id', $roleId)->update([
-                'status'        =>  $status,
-                'update_time'   =>  thisTime()
-            ]);
-        } catch (Exception $exception) {
-            return false;
-        }
+        return self::Db(self::$roleTable)->where('id', $roleId)->update([
+            'status'        =>  $status,
+            'update_time'   =>  thisTime()
+        ]);
     }
 
     /**
@@ -101,14 +81,10 @@ class AuthDb extends BaseDb
      * @return false
      */
     public static function updateRoleData(int $roleId, string $roleName) {
-        try {
-            self::Db(self::$roleTable)->where('id', $roleId)->update([
-                'role_name'     =>  $roleName,
-                'update_time'   =>  thisTime()
-            ]);
-        } catch (Exception $exception) {
-            return false;
-        }
+        return self::Db(self::$roleTable)->where('id', $roleId)->update([
+            'role_name'     =>  $roleName,
+            'update_time'   =>  thisTime()
+        ]);
     }
 
     /**
@@ -117,25 +93,17 @@ class AuthDb extends BaseDb
      * @return bool
      */
     public static function deleteRoleById($roleId) {
-        try {
-            $res = self::Db(self::$roleTable)->where('id', $roleId)->delete();
-            return $res > 0;
-        } catch (Exception $exception) {
-            return false;
-        }
+        $res = self::Db(self::$roleTable)->where('id', $roleId)->delete();
+        return $res > 0;
     }
 
     /**
      * 根据ID查询权限菜单信息
      * @param $ruleId
-     * @return bool
+     * @return array|\think\Model|null
      */
     public static function findRuleByRuleId($ruleId) {
-        try {
-            return self::Db(self::$ruleTable)->where('id', $ruleId)->find();
-        } catch (Exception $exception) {
-            return false;
-        }
+        return self::Db(self::$ruleTable)->where('id', $ruleId)->find();
     }
 
     /**
@@ -144,20 +112,16 @@ class AuthDb extends BaseDb
      * @return bool
      */
     public static function createRule($data) {
-        try {
-            $result = self::Db(self::$ruleTable)->insert([
-                'menu_name'     =>  $data['menu_name'],
-                'parent_menu'   =>  $data['parent_menu'],
-                'menu_adds'     =>  $data['menu_adds'],
-                'menu_icon'     =>  $data['menu_icon'],
-                'sort'          =>  $data['sort'],
-                'create_time'   =>  thisTime(),
-                'update_time'   =>  thisTime()
-            ]);
-            return $result > 0;
-        } catch (Exception $exception) {
-            return false;
-        }
+        $result = self::Db(self::$ruleTable)->insert([
+            'menu_name'     =>  $data['menu_name'],
+            'parent_menu'   =>  $data['parent_menu'],
+            'menu_adds'     =>  $data['menu_adds'],
+            'menu_icon'     =>  $data['menu_icon'],
+            'sort'          =>  $data['sort'],
+            'create_time'   =>  thisTime(),
+            'update_time'   =>  thisTime()
+        ]);
+        return $result > 0;
     }
 
     /**
@@ -165,12 +129,8 @@ class AuthDb extends BaseDb
      * @return false|\think\Collection
      */
     public static function getAllParentMenu() {
-        try {
-            $result = self::Db(self::$ruleTable)->where('parent_menu', 0)->select();
-            return $result;
-        } catch (Exception $exception) {
-            return false;
-        }
+        $result = self::Db(self::$ruleTable)->where('parent_menu', 0)->select();
+        return $result;
     }
 
     /**
@@ -181,23 +141,19 @@ class AuthDb extends BaseDb
      * @return bool|\think\Paginator    返回数据
      */
     public static function getMenuList($page, $limit = 10, $condition = []) {
-        try {
-            $result = self::Db(self::$ruleTable)
-                ->where($condition)
-                ->order('sort','desc')
-                ->paginate(['list_rows'=>$limit, 'page'=>$page])
-                ->each(function($item){
-                    if ($item['parent_menu'] == 0) {
-                        $item['level'] = "一级菜单";
-                    } else {
-                        $item['level'] = "二级菜单";
-                    }
-                    return $item;
-                });
-            return $result;
-        } catch (Exception $exception) {
-            return false;
-        }
+        $result = self::Db(self::$ruleTable)
+            ->where($condition)
+            ->order('sort','desc')
+            ->paginate(['list_rows'=>$limit, 'page'=>$page])
+            ->each(function($item){
+                if ($item['parent_menu'] == 0) {
+                    $item['level'] = "一级菜单";
+                } else {
+                    $item['level'] = "二级菜单";
+                }
+                return $item;
+            });
+        return $result;
     }
 
     /**
@@ -207,12 +163,8 @@ class AuthDb extends BaseDb
      * @return bool         返回修改是否成功
      */
     public static function updateMenu($ruleId, $data) {
-        try {
-            $res = self::Db(self::$ruleTable)->where('id', $ruleId)->update($data);
-            return $res > 0;
-        } catch (Exception $exception) {
-            return false;
-        }
+        $res = self::Db(self::$ruleTable)->where('id', $ruleId)->update($data);
+        return $res > 0;
     }
 
     /**
