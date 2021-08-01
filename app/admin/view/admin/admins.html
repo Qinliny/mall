@@ -77,13 +77,13 @@
     </div>
 </div>
 
-<die class="details-box" style="display: none">
+<div class="details-box" style="display: none">
     <div class="layui-card-header">管理员详细信息</div>
     <div class="layui-card-body layui-form" lay-filter="adminDetailsForm">
         <div class="layui-form-item">
             <label class="layui-form-label">管理员姓名</label>
             <div class="layui-input-block">
-                <input type="text" name="name" autocomplete="off" class="layui-input">
+                <input type="text" name="name" readonly autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
@@ -119,7 +119,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">出生年月日</label>
             <div class="layui-input-block">
-                <input type="text" name="native_place" readonly autocomplete="off" class="layui-input">
+                <input type="text" name="birthday" readonly autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
@@ -129,7 +129,61 @@
             </div>
         </div>
     </div>
-</die>
+</div>
+
+<div class="update-box" style="display: none">
+    <div class="layui-card-header">修改管理员信息</div>
+    <div class="layui-card-body layui-form" lay-filter="updateAdminInfoForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">管理员姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电子邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="email" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">微信账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="wx_number" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">QQ号</label>
+            <div class="layui-input-block">
+                <input type="text" name="qq_number" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">籍贯</label>
+            <div class="layui-input-block">
+                <input type="text" name="native_place" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出生年月日</label>
+            <div class="layui-input-block">
+                <input type="text" name="birthday" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="text" name="sex" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+</div>
 {/block}
 
 {block name="js"}
@@ -162,19 +216,15 @@
                     }
                 }
                 ,{field: 'create_time', title: '注册时间'}
-                ,{field: 'wealths', title: '操作', toolbar: "#barOperation"}
+                ,{field: 'wealths', title: '操作', toolbar: "#barOperation", width: 220,  fixed: 'right'}
             ]]
         });
 
         form.on('submit(query)', function(data){
             var param = data.field
             listTable.reload({
-                where: {
-                    param
-                },
-                page: {
-                    curr: 1
-                },
+                where: {param},
+                page: {curr: 1},
                 done: function(){
                     thisTableWhere = this
                 }
@@ -188,19 +238,60 @@
             }
             listTable.reload('list')
         })
-
+        
+        function checkDetail(obj) {
+            let elements = $('.details-box').html()
+            top.layui.admin.popupRight({
+                id: 'LAY_adminPopupAdminDetails'
+                ,area: '350px'
+                ,content: elements
+                ,success: function(){
+                    let info = obj.data
+                    top.layui.form.val("adminDetailsForm", {
+                        "name": info.admins_name,
+                        "phone": info.phone,
+                        "email": info.email,
+                        "wx_number": info.wx_number,
+                        "qq_number": info.wx_number,
+                        "native_place": info.native_place,
+                        "birthday": info.birthday,
+                        "sex": info.sex
+                    })
+                    top.layui.form.render()
+                }
+            })
+        }
+        
+        function update(obj) {
+            let elements = $('.details-box').html()
+            top.layui.admin.popupRight({
+                id: 'LAY_adminPopupAdminDetails'
+                ,area: '350px'
+                ,content: elements
+                ,success: function(){
+                    let info = obj.data
+                    top.layui.form.val("adminDetailsForm", {
+                        "name": info.admins_name,
+                        "phone": info.phone,
+                        "email": info.email,
+                        "wx_number": info.wx_number,
+                        "qq_number": info.wx_number,
+                        "native_place": info.native_place,
+                        "birthday": info.birthday,
+                        "sex": info.sex
+                    })
+                    top.layui.form.render()
+                }
+            })
+        }
+        
         table.on('tool(list)', function (obj) {
             switch (obj.event) {
                 case "detail":
-                    var elements = $('.details-box').html()
-                    top.layui.admin.popupRight({
-                        id: 'LAY_adminPopupAdminDetails'
-                        ,area: '350px'
-                        ,content: elements
-                        ,success: function(){
-                            console.log($('.layui-layer-adminRight'))
-                        }
-                    })
+                    checkDetail(obj)
+                    break;
+                case "update":
+                    update(obj);
                     break;
             }
         })
